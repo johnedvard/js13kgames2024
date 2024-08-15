@@ -1,7 +1,7 @@
 import { init, Sprite, GameLoop } from "kontra";
 import { avalanche } from "thirdweb/chains";
 // 1. import the extension you want to use
-import { getOwnedNFTs } from "thirdweb/extensions/erc721";
+import { getNFTs } from "thirdweb/extensions/erc721";
 import { createThirdwebClient, getContract } from "thirdweb";
 
 let { canvas } = init();
@@ -45,17 +45,30 @@ async function boot() {
   // 2. get the contract
   const contract = getContract({
     client,
-    address: "0xCE4Fee23Ab35D0d9A4b6b644881dDD8aDEBeb300",
+    address: "0xCf91B99548b1C17dD1095c0680E20de380635e20",
     chain: avalanche,
   });
 
   // 3. call the extension function
-  const ownedNFTs = await getOwnedNFTs({
+  const chikinz = await getNFTs({
     contract,
-    owner: "0xdB808bF85Aab6E8e66b94B816b54DB1B071A650f",
+    start: 10000,
+    count: 3,
   });
 
-  console.log(ownedNFTs);
+  const chikinzEl = document.getElementById("chik");
+  const metadata: string[] = [];
+  chikinz.forEach((chik: any) => {
+    if (chik?.metadata?.attributes?.length > 0) {
+      const txt = chik?.metadata?.attributes?.map((attr: any) => attr?.value);
+      metadata.push(txt);
+      if (chikinzEl) {
+        const chikEl = document.createElement("div");
+        chikEl.innerText = JSON.stringify(txt);
+        chikinzEl.appendChild(chikEl);
+      }
+    }
+  });
 }
 
 boot();
