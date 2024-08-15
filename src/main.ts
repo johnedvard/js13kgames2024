@@ -1,5 +1,5 @@
 import { init, Sprite, GameLoop } from "kontra";
-import { avalanche, polygon } from "thirdweb/chains";
+import { avalanche } from "thirdweb/chains";
 // 1. import the extension you want to use
 import { getOwnedNFTs } from "thirdweb/extensions/erc721";
 import { createThirdwebClient, getContract } from "thirdweb";
