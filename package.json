@@ -1,0 +1,19 @@
+{
+  "name": "js13kgames2024",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "js13k-packer": "^1.0.2",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "thirdweb": "^5.46.0"
+  }
+}
