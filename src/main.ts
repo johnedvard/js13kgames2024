@@ -4,11 +4,6 @@ import { avalanche } from "thirdweb/chains";
 import { getOwnedNFTs } from "thirdweb/extensions/erc721";
 import { createThirdwebClient, getContract } from "thirdweb";
 
-const client = createThirdwebClient({
-  // use `secretKey` for server side or script usage
-  clientId: "1208e5a68330be8540c30917e7065d4d",
-});
-
 let { canvas } = init();
 
 let sprite = Sprite({
@@ -38,20 +33,29 @@ let loop = GameLoop({
   },
 });
 
-console.log("start");
-loop.start(); // start the game
+async function boot() {
+  console.log("start");
+  loop.start(); // start the game
 
-// 2. get the contract
-const contract = getContract({
-  client,
-  address: "0xCE4Fee23Ab35D0d9A4b6b644881dDD8aDEBeb300",
-  chain: avalanche,
-});
+  const client = createThirdwebClient({
+    // use `secretKey` for server side or script usage
+    clientId: "1208e5a68330be8540c30917e7065d4d",
+  });
 
-// 3. call the extension function
-const ownedNFTs = await getOwnedNFTs({
-  contract,
-  owner: "0xdB808bF85Aab6E8e66b94B816b54DB1B071A650f",
-});
+  // 2. get the contract
+  const contract = getContract({
+    client,
+    address: "0xCE4Fee23Ab35D0d9A4b6b644881dDD8aDEBeb300",
+    chain: avalanche,
+  });
 
-console.log(ownedNFTs);
+  // 3. call the extension function
+  const ownedNFTs = await getOwnedNFTs({
+    contract,
+    owner: "0xdB808bF85Aab6E8e66b94B816b54DB1B071A650f",
+  });
+
+  console.log(ownedNFTs);
+}
+
+boot();
