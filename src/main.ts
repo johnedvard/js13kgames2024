@@ -9,6 +9,7 @@ import { initializeInputController } from "./inputController";
 const { canvas, context } = init("game");
 
 let closestPointOnLine: Vector | null = null;
+let resizeTimeout: number | undefined;
 const objects: any[] = [];
 
 document.addEventListener("contextmenu", function (e) {
@@ -99,7 +100,16 @@ const loop = GameLoop({
 
 async function boot() {
   console.log("start");
+  const zoom = 1;
+  scaleCanvas(zoom);
+  initializeInputController();
+  initGameObjects(zoom);
+  addWalls(canvas, zoom);
+  loop.start(); // start the game
+  // initThirdweb();
+}
 
+function scaleCanvas(zoom = 1) {
   const { width, height } = canvas;
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
@@ -111,17 +121,11 @@ async function boot() {
 
   // Apply the calculated scale to the canvas
   canvas.style.width = `${scaledWidth}px`;
-  canvas.style.height = `${scaledHeight}px`;
+  canvas.style.height = `${scaledHeight - 15}px`;
   canvas.style.position = "absolute";
   canvas.style.left = `${(screenWidth - scaledWidth) / 2}px`;
-  canvas.style.top = `${(screenHeight - scaledHeight) / 2}px`;
-  const zoom = 1;
+  canvas.style.top = `${(screenHeight - scaledHeight) / 2 + 5}px`;
   context.scale(zoom, zoom);
-  initializeInputController();
-  initGameObjects(zoom);
-  addWalls(canvas, zoom);
-  loop.start(); // start the game
-  // initThirdweb();
 }
 
 function addWalls(canvas: HTMLCanvasElement, scale: number = 1) {
@@ -149,3 +153,15 @@ function addWalls(canvas: HTMLCanvasElement, scale: number = 1) {
 }
 
 boot();
+
+function debouncedResize() {
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
+  resizeTimeout = window.setTimeout(scaleCanvas, 150);
+}
+
+// Listen for resize events
+window.addEventListener("resize", debouncedResize);
+
+// Initial call to set the canvas size
