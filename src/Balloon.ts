@@ -102,27 +102,25 @@ export class Balloon {
         spring.normalVector.y * gasPressure
       );
       p1.applyForce(force);
-      p2.applyForce(force);
+      p2.applyForce(force.scale(0.38)); // prent the balloon from spinning
     });
   }
 
   update() {
+    this.springs.forEach((spring) => spring.update());
     this.updateBalloonGravity();
+    this.particles.forEach((particle) => {
+      particle.applyForce(this.balloonGravity);
+    });
     this.centerPoint = this.particles
       .reduce((acc, particle) => acc.add(particle.pos), Vector(0, 0))
       .scale(1 / this.particles.length);
 
     this.handleGasInput();
-    this.springs.forEach((spring) => spring.update());
-
     this.applyGasPressureForce();
 
-    this.particles.forEach((particle) => {
-      particle.applyForce(this.balloonGravity);
-    });
-
     // Collision detection and resolution
-    const radius = 5;
+    const radius = 15;
     for (let i = 0; i < this.particles.length; i++) {
       for (let j = i + 1; j < this.particles.length; j++) {
         const p1 = this.particles[i];
@@ -182,7 +180,7 @@ export class Balloon {
     context.beginPath();
     context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
     context.strokeStyle = this.getColorBasedOnGasAmount(this.gasAmount);
-    context.lineWidth = 3;
+    context.lineWidth = 10;
     const vertices = this.particles.map((p) => p.pos);
 
     // Function to calculate Catmull-Rom spline points
