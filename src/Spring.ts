@@ -7,7 +7,7 @@ export class Spring {
   p2: Particle;
   length: number = 1;
   stiffness: number = 0.05;
-  damping: number = 0.4;
+  damping: number = 0.5;
   normalVector: Vector = Vector(0, 0);
 
   constructor(p1: Particle, p2: Particle, length: number, stiffness = 0.05) {
@@ -57,7 +57,7 @@ export class Spring {
 
     this.p1.render(context);
     this.p2.render(context);
-    this.renderNormalVector(context);
+    // this.renderNormalVector(context);
   }
 
   renderNormalVector(context: CanvasRenderingContext2D) {

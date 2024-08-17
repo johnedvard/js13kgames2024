@@ -4,13 +4,14 @@ import { Spring } from "./Spring";
 import { catmullRomSpline } from "./mathUtils";
 import { isUserTouching } from "./inputController";
 
+const MING_GAS_AMOUNT = 10000;
 export class Balloon {
   springs: Spring[] = [];
   particles: Particle[] = []; // Store particles for collision detection
   volume: number = 0; // calculated volume i the balloon
   gasPressure: number = 0; // calculated gas pressure in the balloon
   centerPoint: Vector = Vector(0, 0); // Center point of the balloon
-  balloonGravity: Vector = Vector(0, -0.002); // Gravity acting on the balloon
+  balloonGravity: Vector = Vector(0, 0); // calculated Gravity acting on the preassure in the balloon
 
   text: Text = Text({
     text: "",
@@ -21,15 +22,15 @@ export class Balloon {
     anchor: { x: 0.7, y: 0.2 },
   });
 
-  gasAmount: number = 100; // Number of moles of gas
-  R: number = 0.1; // Ideal gas constant
-  T: number = 10; // Temperature in Kelvin
+  gasAmount: number = 70000; // Number of moles of gas
+  R: number = 0.3; // Ideal gas constant
+  T: number = 3; // Temperature in Kelvin
 
   constructor(startPos: Vector) {
-    const numParticles = 10;
+    const numParticles = 20;
     const distance = 50;
-    const length = 20;
-    const stiffness = 0.05;
+    const length = 10;
+    const stiffness = 0.09;
     const angleStep = (2 * Math.PI) / numParticles;
 
     // Create particles around the perimeter
@@ -37,7 +38,6 @@ export class Balloon {
       const angle = i * angleStep;
       const x = startPos.x + distance * Math.cos(angle); // Centered at (50, 50)
       const y = startPos.y + distance * Math.sin(angle);
-      console.log(x, y);
       this.particles.push(new Particle(Vector(x, y)));
     }
 
@@ -71,12 +71,12 @@ export class Balloon {
   }
   updateBalloonGravity() {
     const maxGasAmount = 130000;
-    const minGravity = -0.01;
-    const maxGravity = 0.01;
+    const minGravity = -0.1;
+    const maxGravity = 0.1;
 
     // Ensure gasAmount is within the range
     const clampedGasAmount = Math.max(
-      0,
+      500,
       Math.min(this.gasAmount, maxGasAmount)
     );
 
@@ -92,23 +92,33 @@ export class Balloon {
 
   applyGasPressureForce() {
     const gasPressure = this.calculateGasPressure();
-
     this.springs.forEach((spring) => {
       const p1 = spring.p1;
       const p2 = spring.p2;
-
-      const force = Vector(
-        spring.normalVector.x * gasPressure,
-        spring.normalVector.y * gasPressure
-      );
-      p1.applyForce(force);
-      p2.applyForce(force.scale(0.38)); // prent the balloon from spinning
+      spring.length = this.gasAmount / 5000;
+      if (spring.length < 1) spring.length = 1;
+      p1.applyForce(spring.normalVector.scale(gasPressure)); // prent the balloon from spinning
+      p2.applyForce(spring.normalVector.scale(gasPressure).scale(-1)); // prent the balloon from spinning
     });
+
+    // this.springs.forEach((spring) => {
+    //   const p1 = spring.p1;
+    //   const p2 = spring.p2;
+
+    //   // Calculate the force
+    //   const force = Vector(
+    //     spring.normalVector.x * gasPressure,
+    //     spring.normalVector.y * gasPressure
+    //   );
+
+    //   // Apply the force to both particles
+    //   p1.applyForce(force);
+    //   p2.applyForce(force.scale(-1));
+    // });
   }
 
   update() {
     this.springs.forEach((spring) => spring.update());
-    this.updateBalloonGravity();
     this.particles.forEach((particle) => {
       particle.applyForce(this.balloonGravity);
     });
@@ -117,6 +127,7 @@ export class Balloon {
       .scale(1 / this.particles.length);
 
     this.handleGasInput();
+    this.updateBalloonGravity();
     this.applyGasPressureForce();
 
     // Collision detection and resolution
@@ -145,8 +156,8 @@ export class Balloon {
     } else {
       this.gasAmount -= gasToAdd / 2;
     }
-    if (this.gasAmount < 0) {
-      this.gasAmount = 0;
+    if (this.gasAmount < MING_GAS_AMOUNT) {
+      this.gasAmount = MING_GAS_AMOUNT;
     }
     if (this.gasAmount > 140000) {
       console.log("burst balloon");

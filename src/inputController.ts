@@ -22,22 +22,18 @@ export function cleanupInputController() {
 
 function onMouseDown() {
   isTouching = true;
-  console.log("Mouse down", isTouching);
 }
 
 function onMouseUp() {
   isTouching = false;
-  console.log("Mouse up", isTouching);
 }
 
 function onTouchStart() {
   isTouching = true;
-  console.log("Touch start", isTouching);
 }
 
 function onTouchEnd() {
   isTouching = false;
-  console.log("Touch end", isTouching);
 }
 
 export function isUserTouching(): boolean {

@@ -1,10 +1,11 @@
 import { Vector } from "kontra";
 
 const GRAVITY = Vector(0, 0);
+const MAX_SPEED = 8;
 
 export class Particle {
   mass: number = 1;
-  velocity: Vector = Vector(0.1, 0);
+  velocity: Vector = Vector(0, 0);
   force: Vector = Vector(GRAVITY);
   pos: Vector = Vector(0, 0);
   radius: number = 0.5;
@@ -20,6 +21,8 @@ export class Particle {
       this.force.y / this.mass
     );
     this.velocity = this.velocity.add(acceleration);
+    this.velocity.clamp(-MAX_SPEED, -MAX_SPEED, MAX_SPEED, MAX_SPEED);
+
     this.pos = this.pos.add(this.velocity);
     this.force = Vector(GRAVITY);
   }

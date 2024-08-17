@@ -58,7 +58,7 @@ const loop = GameLoop({
         if (intersections % 2 === 1 && closestPointOnLine) {
           // Particle is inside another object
           particle.pos = Vector(closestPointOnLine);
-          particle.velocity = particle.velocity.scale(-1);
+          particle.velocity = particle.velocity.scale(-1); // adjust the velocity to simulate a bounce
         }
       });
     }
