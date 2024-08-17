@@ -20,22 +20,22 @@ export function cleanupInputController() {
   window.removeEventListener("touchend", onTouchEnd);
 }
 
-function onMouseDown(event: MouseEvent) {
+function onMouseDown() {
   isTouching = true;
   console.log("Mouse down", isTouching);
 }
 
-function onMouseUp(event: MouseEvent) {
+function onMouseUp() {
   isTouching = false;
   console.log("Mouse up", isTouching);
 }
 
-function onTouchStart(event: TouchEvent) {
+function onTouchStart() {
   isTouching = true;
   console.log("Touch start", isTouching);
 }
 
-function onTouchEnd(event: TouchEvent) {
+function onTouchEnd() {
   isTouching = false;
   console.log("Touch end", isTouching);
 }

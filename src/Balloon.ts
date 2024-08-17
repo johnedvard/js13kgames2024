@@ -93,7 +93,7 @@ export class Balloon {
   applyGasPressureForce() {
     const gasPressure = this.calculateGasPressure();
 
-    this.springs.forEach((spring, index) => {
+    this.springs.forEach((spring) => {
       const p1 = spring.p1;
       const p2 = spring.p2;
 
@@ -102,7 +102,7 @@ export class Balloon {
         spring.normalVector.y * gasPressure
       );
       p1.applyForce(force);
-      p2.applyForce(Vector(-force.x, -force.y));
+      p2.applyForce(force);
     });
   }
 
