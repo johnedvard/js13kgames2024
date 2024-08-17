@@ -11,12 +11,24 @@ const { canvas, context } = init("game");
 let closestPointOnLine: Vector | null = null;
 const objects: any[] = [];
 
-function initGameObjects() {
-  const player = new Balloon(Vector(250, 150));
+function initGameObjects(zoom = 1) {
+  const player = new Balloon(Vector(150, canvas.height / zoom - 350));
   // const player2 = new Balloon(Vector(290, 150));
-  // const body = new RigidBody(Vector(120, 400), 1150, 150);
+  const body = new RigidBody(Vector(700, canvas.height / zoom - 150), 150, 150);
+  const body2 = new RigidBody(
+    Vector(900, canvas.height / zoom - 350),
+    350,
+    350
+  );
+  const body3 = new RigidBody(
+    Vector(-100, canvas.height / zoom - 1150),
+    canvas.width / zoom + 200,
+    200
+  );
   objects.push(player);
-  // objects.push(body);
+  objects.push(body);
+  objects.push(body2);
+  objects.push(body3);
   // objects.push(player2);
 }
 
@@ -83,8 +95,7 @@ const loop = GameLoop({
 
 async function boot() {
   console.log("start");
-  initializeInputController();
-  initGameObjects();
+
   const { width, height } = canvas;
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
@@ -102,7 +113,8 @@ async function boot() {
   canvas.style.top = `${(screenHeight - scaledHeight) / 2}px`;
   const zoom = 1;
   context.scale(zoom, zoom);
-
+  initializeInputController();
+  initGameObjects(zoom);
   addWalls(canvas, zoom);
   loop.start(); // start the game
   // initThirdweb();
