@@ -1,23 +1,35 @@
-import { Vector } from "kontra";
+import { Text, Vector } from "kontra";
 import { Particle } from "./Particle";
 import { Spring } from "./Spring";
-import { catmullRomSpline } from "./utils";
+import { catmullRomSpline } from "./mathUtils";
+import { isUserTouching } from "./inputController";
 
 export class Balloon {
   springs: Spring[] = [];
   particles: Particle[] = []; // Store particles for collision detection
   volume: number = 0; // calculated volume i the balloon
   gasPressure: number = 0; // calculated gas pressure in the balloon
+  centerPoint: Vector = Vector(0, 0); // Center point of the balloon
+  balloonGravity: Vector = Vector(0, -0.002); // Gravity acting on the balloon
 
-  gasAmount: number = 2000; // Number of moles of gas
+  text: Text = Text({
+    text: "",
+    font: "32px Arial",
+    color: "white",
+    x: 300,
+    y: 100,
+    anchor: { x: 0.7, y: 0.2 },
+  });
+
+  gasAmount: number = 100; // Number of moles of gas
   R: number = 0.1; // Ideal gas constant
   T: number = 10; // Temperature in Kelvin
 
   constructor(startPos: Vector) {
-    const numParticles = 6;
-    const distance = 20;
-    const length = 10;
-    const stiffness = 0.1;
+    const numParticles = 10;
+    const distance = 50;
+    const length = 20;
+    const stiffness = 0.05;
     const angleStep = (2 * Math.PI) / numParticles;
 
     // Create particles around the perimeter
@@ -25,6 +37,7 @@ export class Balloon {
       const angle = i * angleStep;
       const x = startPos.x + distance * Math.cos(angle); // Centered at (50, 50)
       const y = startPos.y + distance * Math.sin(angle);
+      console.log(x, y);
       this.particles.push(new Particle(Vector(x, y)));
     }
 
@@ -56,21 +69,56 @@ export class Balloon {
     this.volume = this.calculateVolume();
     return (this.gasAmount * this.R * this.T) / this.volume;
   }
+  updateBalloonGravity() {
+    const maxGasAmount = 130000;
+    const minGravity = -0.01;
+    const maxGravity = 0.01;
+
+    // Ensure gasAmount is within the range
+    const clampedGasAmount = Math.max(
+      0,
+      Math.min(this.gasAmount, maxGasAmount)
+    );
+
+    // Calculate the interpolation factor
+    const factor = clampedGasAmount / maxGasAmount;
+
+    // Interpolate between minGravity and maxGravity
+    const gravity = minGravity + factor * (maxGravity - minGravity);
+
+    // Set the balloonGravity
+    this.balloonGravity = Vector(0, -gravity);
+  }
+
+  applyGasPressureForce() {
+    const gasPressure = this.calculateGasPressure();
+
+    this.springs.forEach((spring, index) => {
+      const p1 = spring.p1;
+      const p2 = spring.p2;
+
+      const force = Vector(
+        spring.normalVector.x * gasPressure,
+        spring.normalVector.y * gasPressure
+      );
+      p1.applyForce(force);
+      p2.applyForce(Vector(-force.x, -force.y));
+    });
+  }
 
   update() {
-    this.springs.forEach((spring) => spring.update());
-
-    // Update the volume and gas pressure of the balloon
-    this.gasPressure = this.calculateGasPressure();
-
-    // Apply force according to gas pressure in the balloon
-    const center = this.particles
+    this.updateBalloonGravity();
+    this.centerPoint = this.particles
       .reduce((acc, particle) => acc.add(particle.pos), Vector(0, 0))
       .scale(1 / this.particles.length);
+
+    this.handleGasInput();
+    this.springs.forEach((spring) => spring.update());
+
+    this.applyGasPressureForce();
+
     this.particles.forEach((particle) => {
-      const direction = particle.pos.subtract(center).normalize();
-      const force = direction.scale(this.gasPressure);
-      particle.applyForce(force);
+      particle.applyForce(this.balloonGravity);
     });
 
     // Collision detection and resolution
@@ -92,13 +140,48 @@ export class Balloon {
     }
   }
 
+  handleGasInput() {
+    const gasToAdd = 500;
+    if (isUserTouching()) {
+      this.gasAmount += gasToAdd;
+    } else {
+      this.gasAmount -= gasToAdd / 2;
+    }
+    if (this.gasAmount < 0) {
+      this.gasAmount = 0;
+    }
+    if (this.gasAmount > 140000) {
+      console.log("burst balloon");
+    }
+  }
+
   render(context: CanvasRenderingContext2D) {
     this.springs.forEach((spring) => spring.render(context));
 
+    this.renderOutline(context);
+
+    this.renderGasAmount({
+      x: this.centerPoint.x + 10,
+      y: this.centerPoint.y - 10,
+    });
+  }
+
+  renderGasAmount(position: { x: number; y: number }) {
+    const maxGasAmount = 130000;
+    const gasValue = (this.gasAmount / maxGasAmount) * 13;
+    const gasValueRounded = gasValue.toFixed(1);
+
+    this.text.text = gasValueRounded;
+    this.text.color = this.getColorBasedOnGasAmount(this.gasAmount);
+    this.text.x = position.x;
+    this.text.y = position.y;
+    this.text.render();
+  }
+  renderOutline(context: CanvasRenderingContext2D) {
     // Create a spline through all the points in the particles array
     context.beginPath();
     context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
-    context.strokeStyle = "#abc";
+    context.strokeStyle = this.getColorBasedOnGasAmount(this.gasAmount);
     context.lineWidth = 3;
     const vertices = this.particles.map((p) => p.pos);
 
@@ -123,7 +206,33 @@ export class Balloon {
     // Close the path to connect the first and last point
     context.closePath();
     context.stroke();
+  }
 
-    context.stroke();
+  getColorBasedOnGasAmount(gasAmount: number): string {
+    const maxGasAmount = 130000;
+    const threshold = 20000;
+
+    // Ensure gasAmount is within the range
+    gasAmount = Math.max(0, Math.min(gasAmount, maxGasAmount));
+
+    // If gasAmount is less than the threshold, return green
+    if (gasAmount < threshold) {
+      return "rgb(0, 255, 0)"; // Green
+    }
+
+    // Define start (green) and end (red) colors in RGB
+    const startColor = { r: 0, g: 255, b: 0 }; // Green
+    const endColor = { r: 255, g: 0, b: 0 }; // Red
+
+    // Calculate the interpolation factor
+    const factor = (gasAmount - threshold) / (maxGasAmount - threshold);
+
+    // Interpolate between the start and end colors
+    const r = Math.round(startColor.r + factor * (endColor.r - startColor.r));
+    const g = Math.round(startColor.g + factor * (endColor.g - startColor.g));
+    const b = Math.round(startColor.b + factor * (endColor.b - startColor.b));
+
+    // Return the color as a CSS-compatible string
+    return `rgb(${r}, ${g}, ${b})`;
   }
 }

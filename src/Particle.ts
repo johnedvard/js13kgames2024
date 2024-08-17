@@ -1,6 +1,7 @@
 import { Vector } from "kontra";
 
-const GRAVITY = Vector(0, 0.002);
+const GRAVITY = Vector(0, 0);
+
 export class Particle {
   mass: number = 1;
   velocity: Vector = Vector(0.1, 0);

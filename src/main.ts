@@ -1,16 +1,24 @@
 import { init, GameLoop, Vector } from "kontra";
 // import { initThirdweb } from "./thirdweb";
 import { Balloon } from "./Balloon";
-import { projectPointOntoSegment, rayIntersectsSegment } from "./utils";
+import { projectPointOntoSegment, rayIntersectsSegment } from "./mathUtils";
 import { RigidBody } from "./RigidBody";
+import { Particle } from "./Particle";
+import { Spring } from "./Spring";
+import { initializeInputController } from "./inputController";
 const { canvas, context } = init("game");
 
-const player = new Balloon(Vector(250, 150));
-const player2 = new Balloon(Vector(290, 150));
-const body = new RigidBody(Vector(120, 400), 1150, 150);
-
-const objects = [player, body, player2];
 let closestPointOnLine: Vector | null = null;
+const objects: any[] = [];
+
+function initGameObjects() {
+  const player = new Balloon(Vector(250, 150));
+  // const player2 = new Balloon(Vector(290, 150));
+  // const body = new RigidBody(Vector(120, 400), 1150, 150);
+  objects.push(player);
+  // objects.push(body);
+  // objects.push(player2);
+}
 
 const loop = GameLoop({
   update: function () {
@@ -19,12 +27,12 @@ const loop = GameLoop({
     closestPointOnLine = null;
     for (let i = 0; i < objects.length; i++) {
       const object = objects[i];
-      object.particles.forEach((particle) => {
+      object.particles.forEach((particle: Particle) => {
         let intersections = 0;
         for (let j = 0; j < objects.length; j++) {
           if (i !== j) {
             const otherObject = objects[j];
-            otherObject.springs.forEach((spring) => {
+            otherObject.springs.forEach((spring: Spring) => {
               if (
                 object instanceof Balloon &&
                 rayIntersectsSegment(particle.pos, spring.p1.pos, spring.p2.pos)
@@ -75,9 +83,8 @@ const loop = GameLoop({
 
 async function boot() {
   console.log("start");
-  loop.start(); // start the game
-  // initThirdweb();
-
+  initializeInputController();
+  initGameObjects();
   const { width, height } = canvas;
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
@@ -93,10 +100,12 @@ async function boot() {
   canvas.style.position = "absolute";
   canvas.style.left = `${(screenWidth - scaledWidth) / 2}px`;
   canvas.style.top = `${(screenHeight - scaledHeight) / 2}px`;
-  const zoom = 2;
+  const zoom = 1;
   context.scale(zoom, zoom);
 
   addWalls(canvas, zoom);
+  loop.start(); // start the game
+  // initThirdweb();
 }
 
 function addWalls(canvas: HTMLCanvasElement, scale: number = 1) {

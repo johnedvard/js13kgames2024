@@ -7,7 +7,7 @@ export class Spring {
   p2: Particle;
   length: number = 1;
   stiffness: number = 0.05;
-  damping: number = 0.04;
+  damping: number = 0.4;
   normalVector: Vector = Vector(0, 0);
 
   constructor(p1: Particle, p2: Particle, length: number, stiffness = 0.05) {
