@@ -9,12 +9,17 @@
         margin: 0px;
         overflow: hidden;
         background: linear-gradient(to bottom, #222, #111);
-        -webkit-touch-callout: none; /* Disable callout menu on iOS */
-        user-select: none; /* Standard syntax */
       }
       canvas {
         border: 2px solid #fff;
-        user-select: none; /* Standard syntax */
+      }
+      body,
+      canvas {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-touch-callout: none; /* Disable callout menu on iOS */
       }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

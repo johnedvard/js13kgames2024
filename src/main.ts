@@ -11,6 +11,10 @@ const { canvas, context } = init("game");
 let closestPointOnLine: Vector | null = null;
 const objects: any[] = [];
 
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+});
+
 function initGameObjects(zoom = 1) {
   const player = new Balloon(Vector(150, canvas.height / zoom - 350));
   // const player2 = new Balloon(Vector(290, 150));
