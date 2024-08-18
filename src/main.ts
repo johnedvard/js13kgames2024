@@ -14,7 +14,6 @@ const { canvas } = init("game");
 export const GAME_HEIGHT = 1840;
 export const GAME_WIDTH = 2548;
 
-let closestPointOnLine: Vector | null = null;
 let _objects: any[] = [];
 let _player: Balloon;
 let _goal: Goal;
@@ -25,27 +24,14 @@ let gameHasStarted = false;
 const loop = GameLoop({
   update: function () {
     _objects.forEach((object) => object.update());
-    // Follow the player with the camera
     camera?.follow(_player?.centerPoint.add(Vector(200, -100)));
-    closestPointOnLine = null;
-    // handle collision, move to other file
     handleCollision(_objects);
-    if (_goal.checkIfGoalReached(_player)) {
-      loop.stop();
-      _objects.length = 0;
-
-      currentLevelId++;
-      boot();
-    }
+    handleLevelClear();
   },
   render: function () {
     const context = this.context as CanvasRenderingContext2D;
-    // Clear the canvas
     camera.clear(context);
-
-    // Apply the camera transformation
     camera.apply(context);
-
     _objects.forEach((object) => object.render(context));
   },
 });
@@ -69,4 +55,13 @@ async function boot() {
   // initThirdweb();
 }
 
+function handleLevelClear() {
+  if (_goal.checkIfGoalReached(_player)) {
+    loop.stop();
+    _objects.length = 0;
+
+    currentLevelId++;
+    boot();
+  }
+}
 boot();
