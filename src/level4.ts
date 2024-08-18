@@ -18,7 +18,7 @@ export default function getLevel() {
       {
         box: {
           pos: Vector(-100, GAME_HEIGHT - 1150),
-          width: GAME_WIDTH - 400,
+          width: GAME_WIDTH - 500,
           height: 200,
         },
       },
