@@ -20,6 +20,7 @@ let _goal: Goal;
 let camera: Camera;
 let currentLevelId = 1;
 let gameHasStarted = false;
+let isDisplayingLevelClearScreen = false;
 
 const loop = GameLoop({
   update: function () {
@@ -56,12 +57,17 @@ async function boot() {
 }
 
 function handleLevelClear() {
+  if (isDisplayingLevelClearScreen) return;
   if (_goal.checkIfGoalReached(_player)) {
-    loop.stop();
-    _objects.length = 0;
+    isDisplayingLevelClearScreen = true;
 
-    currentLevelId++;
-    boot();
+    setTimeout(() => {
+      _objects.length = 0;
+      isDisplayingLevelClearScreen = false;
+      loop.stop();
+      currentLevelId++;
+      boot();
+    }, 0);
   }
 }
 boot();

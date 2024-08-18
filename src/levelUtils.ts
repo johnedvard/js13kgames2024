@@ -6,10 +6,18 @@ import { LevelObject } from "./types";
 import level1 from "./level1";
 import level2 from "./level2";
 import level3 from "./level3";
+import level4 from "./level4";
+import level5 from "./level5";
 import { Goal } from "./Goal";
 import { GAME_HEIGHT, GAME_WIDTH } from "./main";
 
-const levels: Array<() => LevelObject> = [level1, level2, level3];
+const levels: Array<() => LevelObject> = [
+  level1,
+  level2,
+  level3,
+  level4,
+  level5,
+];
 
 export function topWall() {
   return {

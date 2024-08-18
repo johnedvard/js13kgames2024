@@ -5,6 +5,13 @@ import { catmullRomSpline } from "./mathUtils";
 import { isUserTouching } from "./inputController";
 
 const MING_GAS_AMOUNT = 10000;
+
+type BalloonOptions = {
+  numParticles: number;
+  length: number;
+  stiffness: number;
+  gasAmount: number;
+};
 export class Balloon {
   springs: Spring[] = [];
   particles: Particle[] = []; // Store particles for collision detection
@@ -26,11 +33,12 @@ export class Balloon {
   R: number = 0.3; // Ideal gas constant
   T: number = 3; // Temperature in Kelvin
 
-  constructor(startPos: Vector) {
-    const numParticles = 20;
-    const distance = 50;
-    const length = 10;
-    const stiffness = 0.09;
+  constructor(startPos: Vector, ballonOptions?: BalloonOptions) {
+    this.gasAmount = ballonOptions?.gasAmount || 70000;
+    const numParticles = ballonOptions?.numParticles || 20;
+    const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
+    const length = ballonOptions?.length || 10;
+    const stiffness = ballonOptions?.stiffness || 0.09;
     const angleStep = (2 * Math.PI) / numParticles;
 
     // Create particles around the perimeter
