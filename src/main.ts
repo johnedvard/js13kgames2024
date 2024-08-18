@@ -21,6 +21,7 @@ let camera: Camera;
 let currentLevelId = 1;
 let gameHasStarted = false;
 let isDisplayingLevelClearScreen = false;
+let isDisplayingPlayerDiedScreen = false;
 
 const loop = GameLoop({
   update: function () {
@@ -57,7 +58,16 @@ async function boot() {
 }
 
 function handleLevelClear() {
-  if (isDisplayingLevelClearScreen) return;
+  if (isDisplayingLevelClearScreen || isDisplayingPlayerDiedScreen) return;
+  if (_player.state === "dead") {
+    isDisplayingPlayerDiedScreen = true;
+    setTimeout(() => {
+      _objects.length = 0;
+      isDisplayingPlayerDiedScreen = false;
+      loop.stop();
+      boot();
+    }, 2000);
+  }
   if (_goal.checkIfGoalReached(_player)) {
     isDisplayingLevelClearScreen = true;
 

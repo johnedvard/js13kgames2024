@@ -1,8 +1,9 @@
-import { Text, Vector } from "kontra";
+import { emit, Text, Vector } from "kontra";
 import { Particle } from "./Particle";
 import { Spring } from "./Spring";
 import { catmullRomSpline } from "./mathUtils";
 import { isUserTouching } from "./inputController";
+import { GameEvent } from "./GameEvent";
 
 const MING_GAS_AMOUNT = 10000;
 
@@ -13,6 +14,7 @@ type BalloonOptions = {
   gasAmount: number;
 };
 export class Balloon {
+  state: "" | "dead" = "";
   springs: Spring[] = [];
   particles: Particle[] = []; // Store particles for collision detection
   volume: number = 0; // calculated volume i the balloon
@@ -108,28 +110,20 @@ export class Balloon {
       p1.applyForce(spring.normalVector.scale(gasPressure)); // prent the balloon from spinning
       p2.applyForce(spring.normalVector.scale(gasPressure).scale(-1)); // prent the balloon from spinning
     });
-
-    // this.springs.forEach((spring) => {
-    //   const p1 = spring.p1;
-    //   const p2 = spring.p2;
-
-    //   // Calculate the force
-    //   const force = Vector(
-    //     spring.normalVector.x * gasPressure,
-    //     spring.normalVector.y * gasPressure
-    //   );
-
-    //   // Apply the force to both particles
-    //   p1.applyForce(force);
-    //   p2.applyForce(force.scale(-1));
-    // });
   }
 
   update() {
-    this.springs.forEach((spring) => spring.update());
-    this.particles.forEach((particle) => {
-      particle.applyForce(this.balloonGravity);
-    });
+    if (this.state === "dead") {
+      this.particles.forEach((particle) => {
+        particle.applyForce(this.balloonGravity);
+        particle.update();
+      });
+    } else {
+      this.springs.forEach((spring) => spring.update());
+      this.particles.forEach((particle) => {
+        particle.applyForce(this.balloonGravity);
+      });
+    }
     this.centerPoint = this.particles
       .reduce((acc, particle) => acc.add(particle.pos), Vector(0, 0))
       .scale(1 / this.particles.length);
@@ -158,6 +152,7 @@ export class Balloon {
   }
 
   handleGasInput() {
+    if (this.state === "dead") return;
     const gasToAdd = 500;
     if (isUserTouching()) {
       this.gasAmount += gasToAdd;
@@ -167,12 +162,28 @@ export class Balloon {
     if (this.gasAmount < MING_GAS_AMOUNT) {
       this.gasAmount = MING_GAS_AMOUNT;
     }
-    if (this.gasAmount > 140000) {
-      console.log("burst balloon");
+    if (this.gasAmount > 130999) {
+      this.setState("dead");
+      emit(GameEvent.burstBalloon);
+    }
+  }
+
+  setState(state: "" | "dead") {
+    this.state = state;
+    switch (state) {
+      case "dead":
+        this.springs.length = 0;
+        break;
     }
   }
 
   render(context: CanvasRenderingContext2D) {
+    if (this.state === "dead") {
+      this.particles.forEach((particle) => {
+        particle.render(context);
+      });
+      return;
+    }
     this.springs.forEach((spring) => spring.render(context));
 
     this.renderOutline(context);

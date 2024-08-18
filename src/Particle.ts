@@ -29,7 +29,7 @@ export class Particle {
 
   render(context: CanvasRenderingContext2D) {
     context.beginPath();
-    context.arc(this.pos.x, this.pos.y, 2, 0, 2 * Math.PI);
+    context.arc(this.pos.x, this.pos.y, 5, 0, 2 * Math.PI);
     context.fillStyle = "#abc";
     context.fill();
   }
