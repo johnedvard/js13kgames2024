@@ -87,7 +87,7 @@ export class Balloon {
     const gravity = minGravity + factor * (maxGravity - minGravity);
 
     // Set the balloonGravity
-    this.balloonGravity = Vector(0, -gravity);
+    this.balloonGravity = Vector(0.001, -gravity);
   }
 
   applyGasPressureForce() {

@@ -70,3 +70,12 @@ export function catmullRomSpline(
         (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3),
   };
 }
+
+export function isPointInsideCircle(
+  point: Vector,
+  center: Vector,
+  radius: number
+): boolean {
+  const distanceSquared = point.distance(center) * point.distance(center);
+  return distanceSquared <= radius * radius;
+}
