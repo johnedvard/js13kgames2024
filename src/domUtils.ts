@@ -1,8 +1,8 @@
 let resizeTimeout: number | undefined;
 
-document.addEventListener("contextmenu", function (e) {
-  e.preventDefault();
-});
+// document.addEventListener("contextmenu", function (e) {
+//   e.preventDefault();
+// });
 let canvas: HTMLCanvasElement;
 
 function scaleCanvas() {
@@ -17,10 +17,10 @@ function scaleCanvas() {
 
   // Apply the calculated scale to the canvas
   canvas.style.width = `${scaledWidth}px`;
-  canvas.style.height = `${scaledHeight - 15}px`;
+  canvas.style.height = `${scaledHeight}px`;
   canvas.style.position = "absolute";
   canvas.style.left = `${(screenWidth - scaledWidth) / 2}px`;
-  canvas.style.top = `${(screenHeight - scaledHeight) / 2 + 5}px`;
+  canvas.style.top = `${(screenHeight - scaledHeight) / 2}px`;
 }
 
 export function listenForResize(gameCanvas: HTMLCanvasElement) {

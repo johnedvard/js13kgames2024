@@ -9,8 +9,7 @@ import { handleCollision } from "./gameUtils";
 import { Goal } from "./Goal";
 
 const { canvas } = init("game");
-
-// Remember to use the same values as the canvas element in index
+// These are just in-game values, not the actual canvas size
 export const GAME_HEIGHT = 1840;
 export const GAME_WIDTH = 2548;
 
