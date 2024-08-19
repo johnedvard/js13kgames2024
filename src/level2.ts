@@ -11,7 +11,7 @@ export default function getLevel() {
       // right wall
       { box: { pos: Vector(1500, -1000), width: 200, height: 2800 } },
       { text: { pos: Vector(100, 200), text: "Attach to floor ⇨ " } },
-      { text: { pos: Vector(1200, 200), text: "Hold to go ⇧ " } },
+      { text: { pos: Vector(1000, 200), text: "Hold to go ⇧ " } },
     ],
   };
 }

@@ -7,12 +7,15 @@ import { initLevel } from "./levelUtils";
 import { listenForResize } from "./domUtils";
 import { handleCollision } from "./gameUtils";
 import { Goal } from "./Goal";
+import { SceneTransition } from "./SceneTransition";
 
 const { canvas } = init("game");
+const { canvas: transitionCanvas } = init("transition");
+const { canvas: hudCanvas } = init("hud");
 // These are just in-game values, not the actual canvas size
 export const GAME_HEIGHT = 1840;
 export const GAME_WIDTH = 2548;
-
+const sceneTransition = new SceneTransition(transitionCanvas);
 let _objects: any[] = [];
 let _player: Balloon;
 let _goal: Goal;
@@ -22,7 +25,7 @@ let gameHasStarted = false;
 let isDisplayingLevelClearScreen = false;
 let isDisplayingPlayerDiedScreen = false;
 
-const loop = GameLoop({
+const mainLoop = GameLoop({
   update: function () {
     _objects.forEach((object) => object.update());
     camera?.follow(_player?.centerPoint.add(Vector(200, -100)));
@@ -30,20 +33,65 @@ const loop = GameLoop({
     handleLevelClear();
   },
   render: function () {
-    const context = this.context as CanvasRenderingContext2D;
+    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
     camera.clear(context);
     camera.apply(context);
     _objects.forEach((object) => object.render(context));
   },
 });
 
-async function boot() {
+let fadeinComplete = false;
+
+const transitionLoop = GameLoop({
+  update: function () {
+    sceneTransition?.update();
+    if (!fadeinComplete && sceneTransition.isFadeInComplete()) {
+      fadeinComplete = true;
+      startLevel();
+    } else if (sceneTransition.isFadeOutComplete()) {
+      fadeinComplete = false;
+      sceneTransition?.reset();
+      transitionLoop.stop();
+    }
+  },
+  render: function () {
+    const context = transitionCanvas.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
+    sceneTransition?.render(context);
+  },
+});
+
+const hudText = Text({
+  x: 100,
+  y: 200,
+  text: "Hello, World!",
+  font: "62px Arial",
+  color: "white",
+  context: hudCanvas.getContext("2d") as CanvasRenderingContext2D,
+});
+const hudLoop = GameLoop({
+  update: function () {},
+  render: function () {
+    // const context = hudCanvas.getContext("2d") as CanvasRenderingContext2D;
+    console.log("rendering hud");
+    hudText.render();
+  },
+});
+
+async function startLevel() {
+  console.log("starting level");
   if (!gameHasStarted) {
-    listenForResize(canvas);
+    listenForResize([canvas, transitionCanvas, hudCanvas]);
+    hudLoop.start();
     initializeInputController();
     camera = new Camera(canvas);
   }
-  const { player, goal, gameObjects } = initLevel(camera, currentLevelId);
+  const { player, goal, gameObjects } = initLevel(
+    canvas,
+    camera,
+    currentLevelId
+  );
   _player = player;
   _goal = goal;
   _objects = gameObjects;
@@ -51,8 +99,8 @@ async function boot() {
   _objects.splice(0, 0, goal);
   // todo cleanup existing objects
 
-  loop.start(); // start the game
   gameHasStarted = true;
+  mainLoop.start(); // start the game
   // initThirdweb();
 }
 
@@ -65,13 +113,14 @@ function handleLevelClear() {
         x: _player.centerPoint.x,
         y: _player.centerPoint.y,
         text: "Bubble burst!", // TODO add more variation to text
+        context: canvas.getContext("2d") as CanvasRenderingContext2D,
       })
     );
     setTimeout(() => {
       _objects.length = 0;
       isDisplayingPlayerDiedScreen = false;
-      loop.stop();
-      boot();
+      mainLoop.stop();
+      startLevel();
     }, 2000);
   }
   if (_goal.checkIfGoalReached(_player)) {
@@ -80,10 +129,10 @@ function handleLevelClear() {
     setTimeout(() => {
       _objects.length = 0;
       isDisplayingLevelClearScreen = false;
-      loop.stop();
       currentLevelId++;
-      boot();
+      mainLoop.stop();
+      transitionLoop.start();
     }, 0);
   }
 }
-boot();
+startLevel();

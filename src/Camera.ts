@@ -1,4 +1,4 @@
-import { Vector } from "kontra";
+import { lerp, Vector } from "kontra";
 
 export class Camera {
   pos: Vector = Vector(0, 0);
@@ -26,8 +26,8 @@ export class Camera {
     if (this.skipFrame) return;
     // Apply lerp to the camera position
     this.pos = Vector(
-      this.lerp(this.pos.x, targetX, this.lerpFactor),
-      this.lerp(this.pos.y, targetY, this.lerpFactor)
+      lerp(this.pos.x, targetX, this.lerpFactor),
+      lerp(this.pos.y, targetY, this.lerpFactor)
     );
   }
 
@@ -46,10 +46,5 @@ export class Camera {
       this.canvas.width + 4000,
       this.canvas.height + 4000
     );
-  }
-
-  // Linear interpolation function
-  lerp(a: number, b: number, t: number): number {
-    return a + (b - a) * t;
   }
 }

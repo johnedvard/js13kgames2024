@@ -37,11 +37,15 @@ export function bottomWall() {
   };
 }
 
-export function initLevel(camera: Camera, levelId = 1) {
+export function initLevel(
+  canvas: HTMLCanvasElement,
+  camera: Camera,
+  levelId = 1
+) {
   const gameObjects: any[] = [];
 
   const level = levels[levelId - 1]();
-  const player = new Balloon(level.playerPos);
+  const player = new Balloon(canvas, level.playerPos);
   const goal = new Goal(level.goalPos);
   camera.setPosition(player.centerPoint);
 
@@ -55,6 +59,7 @@ export function initLevel(camera: Camera, levelId = 1) {
         x: object.text.pos.x,
         y: object.text.pos.y,
         text: object.text.text,
+        context: canvas.getContext("2d") as CanvasRenderingContext2D,
       });
       gameObjects.push(text);
     }

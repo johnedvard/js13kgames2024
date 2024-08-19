@@ -22,20 +22,27 @@ export class Balloon {
   centerPoint: Vector = Vector(0, 0); // Center point of the balloon
   balloonGravity: Vector = Vector(0, 0); // calculated Gravity acting on the preassure in the balloon
 
-  text: Text = Text({
-    text: "",
-    font: "32px Arial",
-    color: "white",
-    x: 300,
-    y: 100,
-    anchor: { x: 0.7, y: 0.2 },
-  });
+  text: Text;
 
   gasAmount: number = 70000; // Number of moles of gas
   R: number = 0.3; // Ideal gas constant
   T: number = 3; // Temperature in Kelvin
 
-  constructor(startPos: Vector, ballonOptions?: BalloonOptions) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    startPos: Vector,
+    ballonOptions?: BalloonOptions
+  ) {
+    this.text = Text({
+      text: "",
+      font: "32px Arial",
+      color: "white",
+      x: 300,
+      y: 100,
+      anchor: { x: 0.7, y: 0.2 },
+      context: canvas.getContext("2d") as CanvasRenderingContext2D,
+    });
+
     this.gasAmount = ballonOptions?.gasAmount || 70000;
     const numParticles = ballonOptions?.numParticles || 20;
     const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
