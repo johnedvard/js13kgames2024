@@ -1,4 +1,4 @@
-import { Vector } from "kontra";
+import { Vector, Text } from "kontra";
 import { createBox } from "./shapeFactory";
 import { Balloon } from "./Balloon";
 import { Camera } from "./Camera";
@@ -8,6 +8,7 @@ import level2 from "./level2";
 import level3 from "./level3";
 import level4 from "./level4";
 import level5 from "./level5";
+import level6 from "./level6";
 import { Goal } from "./Goal";
 import { GAME_HEIGHT, GAME_WIDTH } from "./main";
 
@@ -17,6 +18,7 @@ const levels: Array<() => LevelObject> = [
   level3,
   level4,
   level5,
+  level6,
 ];
 
 export function topWall() {
@@ -48,6 +50,13 @@ export function initLevel(camera: Camera, levelId = 1) {
       gameObjects.push(
         createBox(object.box.pos, object.box.width, object.box.height)
       );
+    } else if (object.text) {
+      const text = Text({
+        x: object.text.pos.x,
+        y: object.text.pos.y,
+        text: object.text.text,
+      });
+      gameObjects.push(text);
     }
   });
 

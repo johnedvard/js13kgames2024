@@ -1,28 +1,15 @@
 import { Vector } from "kontra";
-import { GAME_HEIGHT, GAME_WIDTH } from "./main";
-import { bottomWall, topWall } from "./levelUtils";
 
+// ⇧ ⇨ ⇩ ⇦
 export default function getLevel() {
   return {
-    playerPos: Vector(GAME_WIDTH / 2, GAME_HEIGHT / 2),
-    goalPos: Vector(GAME_WIDTH / 2 + 150, GAME_HEIGHT - 80),
+    playerPos: Vector(0, 0),
+    goalPos: Vector(1550, 80),
     objects: [
-      {
-        box: {
-          pos: Vector(GAME_WIDTH / 2 - 250, 0),
-          width: 50,
-          height: GAME_HEIGHT,
-        },
-      },
-      {
-        box: {
-          pos: Vector(GAME_WIDTH / 2 + 250, 0),
-          width: 50,
-          height: GAME_HEIGHT,
-        },
-      },
-      bottomWall(),
-      topWall(),
+      // floor
+      { box: { pos: Vector(-500, 160), width: 2800, height: 200 } },
+      { text: { pos: Vector(100, 200), text: "Attach to floor ⇨ " } },
+      { text: { pos: Vector(1500, 200), text: "Goal 🎯" } },
     ],
   };
 }

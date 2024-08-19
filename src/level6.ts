@@ -5,7 +5,7 @@ import { bottomWall, topWall } from "./levelUtils";
 export default function getLevel() {
   return {
     playerPos: Vector(150, GAME_HEIGHT - 350),
-    goalPos: Vector(250, 400),
+    goalPos: Vector(450, 1000),
     objects: [
       // larger box bottom
       { box: { pos: Vector(900, GAME_HEIGHT - 350), width: 350, height: 350 } },
@@ -18,7 +18,7 @@ export default function getLevel() {
       {
         box: {
           pos: Vector(-100, GAME_HEIGHT - 1150),
-          width: GAME_WIDTH - 500,
+          width: GAME_WIDTH - 400,
           height: 200,
         },
       },

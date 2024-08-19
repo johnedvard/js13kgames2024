@@ -1,4 +1,4 @@
-import { init, GameLoop, Vector } from "kontra";
+import { init, GameLoop, Vector, Text } from "kontra";
 // import { initThirdweb } from "./thirdweb";
 import { Balloon } from "./Balloon";
 import { initializeInputController } from "./inputController";
@@ -60,6 +60,13 @@ function handleLevelClear() {
   if (isDisplayingLevelClearScreen || isDisplayingPlayerDiedScreen) return;
   if (_player.state === "dead") {
     isDisplayingPlayerDiedScreen = true;
+    _objects.push(
+      Text({
+        x: _player.centerPoint.x,
+        y: _player.centerPoint.y,
+        text: "Bubble burst!", // TODO add more variation to text
+      })
+    );
     setTimeout(() => {
       _objects.length = 0;
       isDisplayingPlayerDiedScreen = false;
