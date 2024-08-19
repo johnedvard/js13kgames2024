@@ -250,14 +250,9 @@ export class Balloon {
     // Ensure gasAmount is within the range
     gasAmount = Math.max(0, Math.min(gasAmount, maxGasAmount));
 
-    // If gasAmount is less than the threshold, return green
-    if (gasAmount < threshold) {
-      return "rgb(0, 255, 0)"; // Green
-    }
-
     // Define start (green) and end (red) colors in RGB
-    const startColor = { r: 0, g: 255, b: 0 }; // Green
-    const endColor = { r: 255, g: 0, b: 0 }; // Red
+    const startColor = { r: 50, g: 150, b: 155 }; // Green
+    const endColor = { r: 255, g: 20, b: 20 }; // Red
 
     // Calculate the interpolation factor
     const factor = (gasAmount - threshold) / (maxGasAmount - threshold);
