@@ -62,20 +62,11 @@ const transitionLoop = GameLoop({
   },
 });
 
-const hudText = Text({
-  x: 100,
-  y: 200,
-  text: "Hello, World!",
-  font: "62px Arial",
-  color: "white",
-  context: hudCanvas.getContext("2d") as CanvasRenderingContext2D,
-});
 const hudLoop = GameLoop({
   update: function () {},
   render: function () {
     // const context = hudCanvas.getContext("2d") as CanvasRenderingContext2D;
     console.log("rendering hud");
-    hudText.render();
   },
 });
 
@@ -112,6 +103,7 @@ function handleLevelClear() {
       Text({
         x: _player.centerPoint.x,
         y: _player.centerPoint.y,
+        font: "32px Arial",
         text: "Bubble burst!", // TODO add more variation to text
         context: canvas.getContext("2d") as CanvasRenderingContext2D,
       })

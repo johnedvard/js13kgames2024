@@ -7,22 +7,14 @@ let gameCanvases: HTMLCanvasElement[];
 
 function scaleCanvas() {
   gameCanvases.forEach((canvas) => {
-    const { width, height } = canvas;
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
+    
     const devicePixelRatio = window.devicePixelRatio || 1;
-
-    // Calculate the scale to fit the canvas inside the viewport while maintaining aspect ratio
-    const scale = Math.min(screenWidth / width, screenHeight / height);
-    const scaledWidth = width * scale;
-    const scaledHeight = height * scale;
-
     // Apply the calculated scale to the canvas
-    canvas.style.width = `${scaledWidth}px`;
-    canvas.style.height = `${scaledHeight}px`;
+    canvas.width = window.innerWidth * devicePixelRatio;
+    canvas.height = window.innerHeight * devicePixelRatio;
     canvas.style.position = "absolute";
-    canvas.style.left = `${(screenWidth - scaledWidth) / 2}px`;
-    canvas.style.top = `${(screenHeight - scaledHeight) / 2}px`;
+    canvas.style.left = "0";
+    canvas.style.top = "0";
 
     // Scale the canvas context to match the device pixel ratio
     const context = canvas.getContext("2d");

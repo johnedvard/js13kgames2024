@@ -59,6 +59,7 @@ export function initLevel(
         x: object.text.pos.x,
         y: object.text.pos.y,
         text: object.text.text,
+        font: "32px Arial",
         context: canvas.getContext("2d") as CanvasRenderingContext2D,
       });
       gameObjects.push(text);
