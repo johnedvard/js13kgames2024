@@ -1,5 +1,8 @@
 import { lerp, Vector } from "kontra";
 
+type FollowOptions = {
+  lerp: boolean;
+};
 export class Camera {
   pos: Vector = Vector(0, 0);
   canvas: HTMLCanvasElement;
@@ -8,6 +11,7 @@ export class Camera {
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.pos = Vector(canvas.width, canvas.height);
   }
 
   setPosition(pos: Vector) {
@@ -15,16 +19,20 @@ export class Camera {
     this.pos = Vector(pos);
   }
 
-  follow(targetPos: Vector) {
+  follow(targetPos: Vector, options: FollowOptions = { lerp: true }) {
     const targetX = targetPos.x - this.canvas.width / 2;
     const targetY = targetPos.y - this.canvas.height / 2;
 
     if (this.skipFrame) return;
-    // Apply lerp to the camera position
-    this.pos = Vector(
-      lerp(this.pos.x, targetX, this.lerpFactor),
-      lerp(this.pos.y, targetY, this.lerpFactor)
-    );
+    if (options.lerp) {
+      // Apply lerp to the camera position
+      this.pos = Vector(
+        lerp(this.pos.x, targetX, this.lerpFactor),
+        lerp(this.pos.y, targetY, this.lerpFactor)
+      );
+    } else {
+      this.pos = Vector(targetX, targetY);
+    }
   }
 
   apply(context: CanvasRenderingContext2D) {
@@ -37,10 +45,10 @@ export class Camera {
     // Adding a margin to clear the canvas
 
     context.clearRect(
-      -2000 + this.pos.x,
-      -2000 + this.pos.y,
-      this.canvas.width + 4000,
-      this.canvas.height + 4000
+      -1000 + this.pos.x,
+      -1000 + this.pos.y,
+      this.canvas.width + 2000,
+      this.canvas.height + 2000
     );
   }
 }

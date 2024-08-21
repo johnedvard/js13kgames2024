@@ -79,3 +79,7 @@ export function isPointInsideCircle(
   const distanceSquared = point.distance(center) * point.distance(center);
   return distanceSquared <= radius * radius;
 }
+
+export function smoothstep(t: number): number {
+  return t * t * (3 - 2 * t);
+}

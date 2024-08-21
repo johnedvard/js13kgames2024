@@ -1,17 +1,20 @@
-import { emit, Text, Vector } from "kontra";
+import { Text, Vector } from "kontra";
 import { Particle } from "./Particle";
 import { Spring } from "./Spring";
 import { catmullRomSpline } from "./mathUtils";
 import { isUserTouching } from "./inputController";
 import { GameEvent } from "./GameEvent";
+import { getColorBasedOnGasAmount } from "./colorUtils";
+import { emit } from "./eventEmitter";
 
 const MING_GAS_AMOUNT = 10000;
 
 type BalloonOptions = {
-  numParticles: number;
-  length: number;
-  stiffness: number;
-  gasAmount: number;
+  numParticles?: number;
+  length?: number;
+  stiffness?: number;
+  gasAmount?: number;
+  isStationairy?: boolean;
 };
 export class Balloon {
   state: "" | "dead" = "";
@@ -21,7 +24,7 @@ export class Balloon {
   gasPressure: number = 0; // calculated gas pressure in the balloon
   centerPoint: Vector = Vector(0, 0); // Center point of the balloon
   balloonGravity: Vector = Vector(0, 0); // calculated Gravity acting on the preassure in the balloon
-
+  isStationairy: boolean = false;
   text: Text;
 
   gasAmount: number = 70000; // Number of moles of gas
@@ -43,11 +46,12 @@ export class Balloon {
       context: canvas.getContext("2d") as CanvasRenderingContext2D,
     });
 
-    this.gasAmount = ballonOptions?.gasAmount || 70000;
+    this.gasAmount = ballonOptions?.gasAmount || 65000;
     const numParticles = ballonOptions?.numParticles || 20;
     const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
     const length = ballonOptions?.length || 10;
     const stiffness = ballonOptions?.stiffness || 0.09;
+    this.isStationairy = ballonOptions?.isStationairy || false;
     const angleStep = (2 * Math.PI) / numParticles;
 
     // Create particles around the perimeter
@@ -159,6 +163,7 @@ export class Balloon {
   }
 
   handleGasInput() {
+    if (this.isStationairy) return;
     if (this.state === "dead") return;
     const gasToAdd = 500;
     if (isUserTouching()) {
@@ -204,7 +209,7 @@ export class Balloon {
     const gasValueRounded = gasValue.toFixed(1);
 
     this.text.text = gasValueRounded;
-    this.text.color = this.getColorBasedOnGasAmount(this.gasAmount);
+    this.text.color = getColorBasedOnGasAmount(this.gasAmount);
     this.text.x = position.x;
     this.text.y = position.y;
     this.text.render();
@@ -213,7 +218,7 @@ export class Balloon {
     // Create a spline through all the points in the particles array
     context.beginPath();
     context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
-    context.strokeStyle = this.getColorBasedOnGasAmount(this.gasAmount);
+    context.strokeStyle = getColorBasedOnGasAmount(this.gasAmount);
     context.lineWidth = 10;
     const vertices = this.particles.map((p) => p.pos);
 
@@ -238,28 +243,5 @@ export class Balloon {
     // Close the path to connect the first and last point
     context.closePath();
     context.stroke();
-  }
-
-  getColorBasedOnGasAmount(gasAmount: number): string {
-    const maxGasAmount = 130000;
-    const threshold = 20000;
-
-    // Ensure gasAmount is within the range
-    gasAmount = Math.max(0, Math.min(gasAmount, maxGasAmount));
-
-    // Define start (green) and end (red) colors in RGB
-    const startColor = { r: 50, g: 150, b: 155 }; // Green
-    const endColor = { r: 255, g: 20, b: 20 }; // Red
-
-    // Calculate the interpolation factor
-    const factor = (gasAmount - threshold) / (maxGasAmount - threshold);
-
-    // Interpolate between the start and end colors
-    const r = Math.round(startColor.r + factor * (endColor.r - startColor.r));
-    const g = Math.round(startColor.g + factor * (endColor.g - startColor.g));
-    const b = Math.round(startColor.b + factor * (endColor.b - startColor.b));
-
-    // Return the color as a CSS-compatible string
-    return `rgb(${r}, ${g}, ${b})`;
   }
 }
