@@ -7,7 +7,6 @@ let gameCanvases: HTMLCanvasElement[];
 
 function scaleCanvas() {
   gameCanvases.forEach((canvas) => {
-    
     const devicePixelRatio = window.devicePixelRatio || 1;
     // Apply the calculated scale to the canvas
     canvas.width = window.innerWidth * devicePixelRatio;

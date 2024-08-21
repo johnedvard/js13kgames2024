@@ -1,4 +1,4 @@
-import { init, GameLoop, Vector, Text } from "kontra";
+import { init, GameLoop, Vector, Text, on } from "kontra";
 // import { initThirdweb } from "./thirdweb";
 import { Balloon } from "./Balloon";
 import { initializeInputController } from "./inputController";
@@ -8,6 +8,7 @@ import { listenForResize } from "./domUtils";
 import { handleCollision } from "./gameUtils";
 import { Goal } from "./Goal";
 import { SceneTransition } from "./SceneTransition";
+import { GameEvent } from "./GameEvent";
 
 const { canvas } = init("game");
 const { canvas: transitionCanvas } = init("transition");
@@ -24,12 +25,21 @@ let currentLevelId = 1;
 let gameHasStarted = false;
 let isDisplayingLevelClearScreen = false;
 let isDisplayingPlayerDiedScreen = false;
+const levelPersistentObjects: any[] = [];
+
+on(GameEvent.burstBalloon, (balloon: Balloon) => {
+  balloon.particles.forEach((particle: any) => {
+    levelPersistentObjects.push(particle);
+  });
+});
 
 const mainLoop = GameLoop({
   update: function () {
     _objects.forEach((object) => object.update());
+    levelPersistentObjects.forEach((object) => object.update());
     camera?.follow(_player?.centerPoint.add(Vector(200, -100)));
-    handleCollision(_objects);
+    // consider not adding levelpersitent objects to the collision detection
+    handleCollision([..._objects, ...levelPersistentObjects]);
     handleLevelClear();
   },
   render: function () {
@@ -37,6 +47,7 @@ const mainLoop = GameLoop({
     camera.clear(context);
     camera.apply(context);
     _objects.forEach((object) => object.render(context));
+    levelPersistentObjects.forEach((object) => object.render(context));
   },
 });
 
@@ -117,6 +128,7 @@ function handleLevelClear() {
   }
   if (_goal.checkIfGoalReached(_player)) {
     isDisplayingLevelClearScreen = true;
+    levelPersistentObjects.length = 0;
 
     setTimeout(() => {
       _objects.length = 0;

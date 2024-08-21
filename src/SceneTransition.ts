@@ -3,7 +3,7 @@ import { lerp, Vector } from "kontra";
 export class SceneTransition {
   private targetY = -10;
   private lerpFactor = 0.09;
-  private pos = Vector(0, 0);
+  pos = Vector(0, 0);
   private state: "fadein" | "fadeout" | "comeplete" = "fadein";
   constructor(private canvas: HTMLCanvasElement) {
     this.pos.y = canvas.height;
@@ -14,7 +14,8 @@ export class SceneTransition {
   }
 
   update() {
-    if (this.pos.y - 1 >= this.targetY) {
+    // lerp will "never" reach target, so reduce by a small margin
+    if (this.pos.y - 2 >= this.targetY) {
       this.pos.y = lerp(this.pos.y, this.targetY, this.lerpFactor);
     } else {
       this.pos.y = lerp(
@@ -30,6 +31,7 @@ export class SceneTransition {
     if (this.state === "fadein" && this.isFadeInComplete()) {
       this.state = "fadeout";
     } else if (this.state === "fadeout" && this.isFadeOutComplete()) {
+      console.log("this tate", this.state);
       this.state = "comeplete";
     }
   }
@@ -48,7 +50,7 @@ export class SceneTransition {
     return this.pos.y <= this.targetY;
   }
   isFadeOutComplete() {
-    return this.pos.y <= this.targetY - this.canvas.height;
+    return this.pos.y - 2 <= this.targetY - this.canvas.height;
   }
   reset() {
     this.state = "fadein";

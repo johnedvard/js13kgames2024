@@ -164,14 +164,14 @@ export class Balloon {
     if (isUserTouching()) {
       this.gasAmount += gasToAdd;
     } else {
-      this.gasAmount -= gasToAdd / 2;
+      this.gasAmount -= gasToAdd;
     }
     if (this.gasAmount < MING_GAS_AMOUNT) {
       this.gasAmount = MING_GAS_AMOUNT;
     }
     if (this.gasAmount > 130999) {
       this.setState("dead");
-      emit(GameEvent.burstBalloon);
+      emit(GameEvent.burstBalloon, this);
     }
   }
 
@@ -186,9 +186,6 @@ export class Balloon {
 
   render(context: CanvasRenderingContext2D) {
     if (this.state === "dead") {
-      this.particles.forEach((particle) => {
-        particle.render(context);
-      });
       return;
     }
     this.springs.forEach((spring) => spring.render(context));
