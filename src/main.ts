@@ -1,15 +1,14 @@
-import { init, GameLoop, Vector, Text } from "kontra";
+import { init, GameLoop, Vector, Text, on } from "kontra";
 // import { initThirdweb } from "./thirdweb";
 import { Balloon } from "./Balloon";
 import { initializeInputController } from "./inputController";
 import { Camera } from "./Camera";
-import { initLevel } from "./levelUtils";
+import { initLevel, levels } from "./levelUtils";
 import { listenForResize } from "./domUtils";
 import { handleCollision } from "./gameUtils";
 import { Goal } from "./Goal";
 import { SceneTransition } from "./SceneTransition";
 import { GameEvent } from "./GameEvent";
-import { on } from "./eventEmitter";
 
 import { BubbleButton } from "./BubbleButton";
 
@@ -20,8 +19,9 @@ const { canvas: hudCanvas } = init("hud");
 export const GAME_HEIGHT = 1840;
 export const GAME_WIDTH = 2548;
 
-type ActiveScene = "menu" | "level";
-let activeScene: ActiveScene = "menu";
+type SceneId = "menu" | "level" | "select";
+let activeScene: SceneId = "menu";
+let nextScene: SceneId = "level";
 const sceneTransition = new SceneTransition(transitionCanvas);
 let _objects: any[] = [];
 let _player: Balloon;
@@ -34,25 +34,83 @@ let isDisplayingPlayerDiedScreen = false;
 const levelPersistentObjects: any[] = [];
 let fadeinComplete = false; // used to control the fadein out transtiion
 
-const playBtn = new BubbleButton(canvas, 0, -120, 75, "Play", GameEvent.play);
+const mainMenuObjects: any = [];
+const selectLevelObjects: any = [];
+const playBtn = new BubbleButton(
+  canvas,
+  0,
+  -120,
+  75,
+  "Play",
+  GameEvent.selectLevel,
+  {}
+);
 // const web3Btn = new BubbleButton(canvas, 0, 120, 75, "Web3", GameEvent.web3);
+mainMenuObjects.push(playBtn);
 
+function createLevelSelectButtons() {
+  selectLevelObjects.length = 0;
+
+  const gap = 150;
+  const buttonWidth = 75;
+  const startPosX = -200;
+  const startPosY = -200;
+
+  const buttonsPerRow = Math.ceil(levels.length / 2);
+
+  let a = 0; // used to calculate the correct level number
+  let b = 1; // used to calculate the correct level number
+  levels.forEach((_, index) => {
+    if (index > Math.ceil(levels.length / buttonsPerRow)) {
+      a = Math.ceil(levels.length / buttonsPerRow);
+      b = 2;
+    }
+    const row = Math.floor(index / buttonsPerRow);
+    const col = index % buttonsPerRow;
+    const x = startPosX + col * (buttonWidth + gap);
+    const y = startPosY + row * (buttonWidth + gap); // Adjust y position for each row
+
+    const levelId = (index + 1 - a) * 2 - b;
+    const buttonText = `Level ${levelId}`;
+    const levelButton = new BubbleButton(
+      canvas,
+      x,
+      y,
+      buttonWidth,
+      buttonText,
+      GameEvent.play,
+      { levelId }
+    );
+    selectLevelObjects.push(levelButton);
+  });
+}
 on(GameEvent.burstBalloon, (balloon: Balloon) => {
   balloon.particles.forEach((particle: any) => {
     levelPersistentObjects.push(particle);
   });
 });
 
-on(GameEvent.play, () => {
-  transitionLoop.start();
+on(GameEvent.play, ({ levelId }: any) => {
+  setTimeout(() => {
+    currentLevelId = levelId;
+    nextScene = "level";
+    transitionLoop.start();
+  }, 500);
+});
+on(GameEvent.selectLevel, () => {
+  setTimeout(() => {
+    nextScene = "select";
+    transitionLoop.start();
+  }, 500);
 });
 
 const mainLoop = GameLoop({
   update: function () {
     if (activeScene === "menu") {
       camera?.follow(Vector(0, 0));
-      playBtn.update();
-      // web3Btn.update();
+      mainMenuObjects.forEach((object: any) => object.update());
+    } else if (activeScene === "select") {
+      selectLevelObjects.forEach((object: any) => object.update());
     } else {
       _objects.forEach((object) => object.update());
       levelPersistentObjects.forEach((object) => object.update());
@@ -67,8 +125,9 @@ const mainLoop = GameLoop({
     camera.clear(context);
     camera.apply(context);
     if (activeScene === "menu") {
-      playBtn.render(context);
-      // web3Btn.render(context);
+      mainMenuObjects.forEach((object: any) => object.render(context));
+    } else if (activeScene === "select") {
+      selectLevelObjects.forEach((object: any) => object.render(context));
     } else {
       _objects.forEach((object) => object.render(context));
       levelPersistentObjects.forEach((object) => object.render(context));
@@ -79,10 +138,13 @@ const mainLoop = GameLoop({
 const transitionLoop = GameLoop({
   update: function () {
     sceneTransition?.update();
-    console.log("transitionloop");
     if (!fadeinComplete && sceneTransition.isFadeInComplete()) {
       fadeinComplete = true;
-      startLevel("level");
+      if (nextScene === "select") {
+        activeScene = "select";
+      } else if (nextScene === "level") {
+        startLevel("level");
+      }
     } else if (sceneTransition.isFadeOutComplete()) {
       fadeinComplete = false;
       sceneTransition?.reset();
@@ -104,10 +166,14 @@ const hudLoop = GameLoop({
   },
 });
 
-async function startLevel(scene: ActiveScene = "menu") {
+async function startLevel(scene: SceneId = "menu") {
   activeScene = scene;
   if (!gameHasStarted) {
-    listenForResize([hudCanvas, transitionCanvas, canvas]);
+    listenForResize(
+      [hudCanvas, transitionCanvas, canvas],
+      [createLevelSelectButtons]
+    );
+
     hudLoop.start();
     initializeInputController(canvas);
     camera = new Camera(canvas);

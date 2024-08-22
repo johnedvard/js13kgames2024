@@ -24,16 +24,23 @@ function scaleCanvas() {
   });
 }
 
-export function listenForResize(allCanvas: HTMLCanvasElement[]) {
+export function listenForResize(
+  allCanvas: HTMLCanvasElement[],
+  callbackFunctions?: Function[]
+) {
   gameCanvases = allCanvas;
   function debouncedResize() {
     if (resizeTimeout) {
       clearTimeout(resizeTimeout);
     }
-    resizeTimeout = window.setTimeout(scaleCanvas, 150);
+    resizeTimeout = window.setTimeout(() => {
+      scaleCanvas();
+      callbackFunctions?.forEach((callback) => callback());
+    }, 150);
   }
 
   // Listen for resize events
   window.addEventListener("resize", debouncedResize);
   scaleCanvas();
+  callbackFunctions?.forEach((callback) => callback());
 }

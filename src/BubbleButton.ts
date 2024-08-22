@@ -1,14 +1,14 @@
-import { GameObject, Text, Vector } from "kontra";
+import { Text, Vector, emit, on, off } from "kontra";
 import { isPointInsideCircle, smoothstep } from "./mathUtils";
 import { getColorBasedOnGasAmount } from "./colorUtils";
 import { GameEvent } from "./GameEvent";
-import { emit, on, off } from "./eventEmitter";
+import { Balloon } from "./Balloon";
 
 export class BubbleButton {
   private circlePos = Vector(0, 0);
   private circleRadius = 0;
   private text: Text;
-  private smallCircles: GameObject[] = [];
+  private smallCircles: any[] = [];
   private baseY: number;
   private baseRadius = 0;
   private time: number = 0;
@@ -26,11 +26,12 @@ export class BubbleButton {
     y: number,
     radius: number,
     text: string,
-    private gameEvent: GameEvent
+    private gameEvent: GameEvent,
+    private gameEventArgs: any
   ) {
+    this.circlePos = Vector(x, y);
     this.baseRadius = radius;
     this.baseY = y;
-    console.log("listen to up");
     on(GameEvent.up, this.onUp);
     this.text = Text({
       text,
@@ -56,7 +57,7 @@ export class BubbleButton {
     ) {
       this.isClicked = true;
       off(GameEvent.up, this.onUp);
-      emit(this.gameEvent);
+      emit(this.gameEvent, this.gameEventArgs);
       this.spawnSmallCircles();
     }
   };
@@ -82,8 +83,8 @@ export class BubbleButton {
     // Update small circles
     this.smallCircles.forEach((circle) => {
       circle.update();
-      circle.y -= 1; // Apply upward gravity
-      circle.x += Math.sin(circle.y / 10); // Sway left and right
+      circle.externalForce.x = 2 * (Math.random() - 0.5);
+      circle.externalForce.y -= 0.02;
     });
 
     if (this.isClicked) {
@@ -95,9 +96,9 @@ export class BubbleButton {
       this.baseRadius = this.baseRadius * 1.01 + 4;
     }
     // Remove small circles that are out of bounds
-    this.smallCircles = this.smallCircles.filter(
-      (circle) => circle.y + circle.radius + 20000 > 0
-    );
+    this.smallCircles = this.smallCircles.filter((circle) => {
+      return circle.centerPoint.y > -2000;
+    });
   }
 
   render(context: CanvasRenderingContext2D) {
@@ -125,44 +126,26 @@ export class BubbleButton {
       this.text.render();
     }
 
-    // Render small circles
-    this.smallCircles.forEach((circle) => circle.render());
+    this.smallCircles.forEach((circle) => circle.render(context));
   }
 
   private spawnSmallCircles() {
     for (let i = 0; i < 10; i++) {
       const angleY = Math.random() * Math.PI * 2;
       const angleX = Math.random() * Math.PI;
-      const speedY = Math.random() * 2 + 1;
-      const speedX = Math.random();
-      const smallCircle = GameObject({
-        context: this.canvas.getContext("2d") as CanvasRenderingContext2D,
-        x: this.circlePos.x + (Math.cos(angleX) * this.circleRadius) / 3,
-        y: this.circlePos.y + (Math.sin(angleY) * this.circleRadius) / 3,
-        radius: 9,
-        dx: Math.cos(angleX) * speedX,
-        dy: Math.sin(angleY) * speedY,
-        update: function () {
-          this.advance();
-          if (!this.dy) return;
-          this.dy -= 0.05; // Apply upward force
-        },
-        render: function () {
-          const context = this.context;
-          if (!context) return;
-          context.save();
-          context.beginPath();
-          context.arc(
-            this.x || 0,
-            this.y || 0,
-            this.radius || 0,
-            0,
-            Math.PI * 2
-          );
-          context.fillStyle = getColorBasedOnGasAmount(50000);
-          context.fill();
-          context.restore();
-        },
+      const pos = Vector(
+        this.circlePos.x + Math.cos(angleX) * this.circleRadius,
+        this.circlePos.y + Math.sin(angleY) * this.circleRadius
+      );
+      const smallCircle = new Balloon(this.canvas, pos, {
+        gasAmount: 5000,
+        length: 1,
+        numParticles: 10,
+        stiffness: 0.2,
+        lineWidth: 2,
+        hideParticles: true,
+        hideText: true,
+        isStationairy: true,
       });
       this.smallCircles.push(smallCircle);
     }

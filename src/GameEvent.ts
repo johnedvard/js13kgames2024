@@ -3,4 +3,5 @@ export enum GameEvent {
   up = "u",
   play = "p",
   web3 = "w3",
+  selectLevel = "sl",
 }

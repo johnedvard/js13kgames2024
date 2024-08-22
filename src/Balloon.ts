@@ -1,11 +1,10 @@
-import { Text, Vector } from "kontra";
+import { Text, Vector, emit } from "kontra";
 import { Particle } from "./Particle";
 import { Spring } from "./Spring";
 import { catmullRomSpline } from "./mathUtils";
 import { isUserTouching } from "./inputController";
 import { GameEvent } from "./GameEvent";
 import { getColorBasedOnGasAmount } from "./colorUtils";
-import { emit } from "./eventEmitter";
 
 const MING_GAS_AMOUNT = 10000;
 
@@ -15,6 +14,9 @@ type BalloonOptions = {
   stiffness?: number;
   gasAmount?: number;
   isStationairy?: boolean;
+  lineWidth?: number;
+  hideText?: boolean;
+  hideParticles?: boolean;
 };
 export class Balloon {
   state: "" | "dead" = "";
@@ -25,7 +27,10 @@ export class Balloon {
   centerPoint: Vector = Vector(0, 0); // Center point of the balloon
   balloonGravity: Vector = Vector(0, 0); // calculated Gravity acting on the preassure in the balloon
   isStationairy: boolean = false;
-  text: Text;
+  text!: Text;
+  lineWidth = 10;
+  hideParticles = false;
+  externalForce = Vector(0, 0); // force that can be applied to the balloon from outside
 
   gasAmount: number = 70000; // Number of moles of gas
   R: number = 0.3; // Ideal gas constant
@@ -36,17 +41,21 @@ export class Balloon {
     startPos: Vector,
     ballonOptions?: BalloonOptions
   ) {
-    this.text = Text({
-      text: "",
-      font: "32px Arial",
-      color: "white",
-      x: 300,
-      y: 100,
-      anchor: { x: 0.7, y: 0.2 },
-      context: canvas.getContext("2d") as CanvasRenderingContext2D,
-    });
+    if (!ballonOptions?.hideText) {
+      this.text = Text({
+        text: "",
+        font: "32px Arial",
+        color: "white",
+        x: 300,
+        y: 100,
+        anchor: { x: 0.7, y: 0.2 },
+        context: canvas.getContext("2d") as CanvasRenderingContext2D,
+      });
+    }
 
     this.gasAmount = ballonOptions?.gasAmount || 65000;
+    this.lineWidth = ballonOptions?.lineWidth || 10;
+    this.hideParticles = ballonOptions?.hideParticles || false;
     const numParticles = ballonOptions?.numParticles || 20;
     const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
     const length = ballonOptions?.length || 10;
@@ -126,13 +135,13 @@ export class Balloon {
   update() {
     if (this.state === "dead") {
       this.particles.forEach((particle) => {
-        particle.applyForce(this.balloonGravity);
+        particle.applyForce(this.balloonGravity.add(this.externalForce));
         particle.update();
       });
     } else {
       this.springs.forEach((spring) => spring.update());
       this.particles.forEach((particle) => {
-        particle.applyForce(this.balloonGravity);
+        particle.applyForce(this.balloonGravity.add(this.externalForce));
       });
     }
     this.centerPoint = this.particles
@@ -193,7 +202,9 @@ export class Balloon {
     if (this.state === "dead") {
       return;
     }
-    this.springs.forEach((spring) => spring.render(context));
+    this.springs.forEach((spring) =>
+      spring.render(context, this, { hideParticles: this.hideParticles })
+    );
 
     this.renderOutline(context);
 
@@ -204,10 +215,10 @@ export class Balloon {
   }
 
   renderGasAmount(position: { x: number; y: number }) {
+    if (!this.text) return;
     const maxGasAmount = 130000;
     const gasValue = (this.gasAmount / maxGasAmount) * 13;
     const gasValueRounded = gasValue.toFixed(1);
-
     this.text.text = gasValueRounded;
     this.text.color = getColorBasedOnGasAmount(this.gasAmount);
     this.text.x = position.x;
@@ -219,7 +230,7 @@ export class Balloon {
     context.beginPath();
     context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
     context.strokeStyle = getColorBasedOnGasAmount(this.gasAmount);
-    context.lineWidth = 10;
+    context.lineWidth = this.lineWidth;
     const vertices = this.particles.map((p) => p.pos);
 
     // Function to calculate Catmull-Rom spline points

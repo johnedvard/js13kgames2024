@@ -1,6 +1,5 @@
-import { Vector } from "kontra";
+import { Vector, emit } from "kontra";
 import { GameEvent } from "./GameEvent";
-import { emit } from "./eventEmitter";
 
 let isTouching = false;
 let _canvas: HTMLCanvasElement;

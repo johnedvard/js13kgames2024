@@ -36,6 +36,7 @@ export class Camera {
   }
 
   apply(context: CanvasRenderingContext2D) {
+    // context.transform(0.5, 0, 0, 0.5, 0, 0); // Apply scale transform
     context.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
     context.translate(-this.pos.x, -this.pos.y); // Apply camera translation
     this.skipFrame = false;

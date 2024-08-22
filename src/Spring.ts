@@ -2,6 +2,10 @@ import { Vector } from "kontra";
 import { Particle } from "./Particle";
 import { RigidBody } from "./RigidBody";
 
+type SpringRenderOptions = {
+  hideParticles?: boolean;
+};
+
 export class Spring {
   p1: Particle;
   p2: Particle;
@@ -45,7 +49,12 @@ export class Spring {
     this.p2.update();
   }
 
-  render<T>(context: CanvasRenderingContext2D, parent?: T) {
+  render<T>(
+    context: CanvasRenderingContext2D,
+    parent?: T,
+    renderOptions: SpringRenderOptions = { hideParticles: false }
+  ) {
+    if (renderOptions.hideParticles) return;
     if (parent instanceof RigidBody) {
       context.beginPath();
       context.moveTo(this.p1.pos.x, this.p1.pos.y);

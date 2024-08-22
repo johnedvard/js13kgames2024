@@ -12,7 +12,7 @@ import level6 from "./level6";
 import { Goal } from "./Goal";
 import { GAME_HEIGHT, GAME_WIDTH } from "./main";
 
-const levels: Array<() => LevelObject> = [
+export const levels: Array<() => LevelObject> = [
   level1,
   level2,
   level3,
