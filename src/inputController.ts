@@ -2,30 +2,44 @@ import { Vector, emit } from "kontra";
 import { GameEvent } from "./GameEvent";
 
 let isTouching = false;
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+let currentX = 0;
+let currentY = 0;
 let _canvas: HTMLCanvasElement;
+
 export function initializeInputController(canvas: HTMLCanvasElement) {
   _canvas = canvas;
   // Mouse events
   _canvas.addEventListener("mousedown", onMouseDown);
   _canvas.addEventListener("mouseup", onMouseUp);
+  _canvas.addEventListener("mousemove", onMouseMove);
 
   // Touch events
   _canvas.addEventListener("touchstart", onTouchStart);
   _canvas.addEventListener("touchend", onTouchEnd);
+  _canvas.addEventListener("touchmove", onTouchMove);
 }
 
 export function cleanupInputController() {
   // Mouse events
   _canvas.removeEventListener("mousedown", onMouseDown);
   _canvas.removeEventListener("mouseup", onMouseUp);
+  _canvas.removeEventListener("mousemove", onMouseMove);
 
   // Touch events
   _canvas.removeEventListener("touchstart", onTouchStart);
   _canvas.removeEventListener("touchend", onTouchEnd);
+  _canvas.removeEventListener("touchmove", onTouchMove);
 }
 
-function onMouseDown() {
+function onMouseDown(e: MouseEvent) {
   isTouching = true;
+  isDragging = false;
+  startX = e.clientX * window.devicePixelRatio;
+  startY = e.clientY * window.devicePixelRatio;
+  emit(GameEvent.down, Vector(startX, startY));
 }
 
 function onMouseUp(e: MouseEvent) {
@@ -39,10 +53,28 @@ function onMouseUp(e: MouseEvent) {
   );
 
   isTouching = false;
+  isDragging = false;
+  emit(GameEvent.up, Vector(startX, startY));
 }
 
-function onTouchStart() {
+function onMouseMove(e: MouseEvent) {
+  if (isTouching) {
+    currentX = e.clientX * window.devicePixelRatio;
+    currentY = e.clientY * window.devicePixelRatio;
+    if (!isDragging) {
+      isDragging = true;
+    }
+    emitDragEvent();
+  }
+}
+
+function onTouchStart(e: TouchEvent) {
   isTouching = true;
+  isDragging = false;
+  const touch = e.touches[0];
+  startX = touch.clientX * window.devicePixelRatio;
+  startY = touch.clientY * window.devicePixelRatio;
+  emit(GameEvent.down, Vector(startX, startY));
 }
 
 function onTouchEnd(e: TouchEvent) {
@@ -55,6 +87,27 @@ function onTouchEnd(e: TouchEvent) {
     )
   );
   isTouching = false;
+  isDragging = false;
+}
+
+function onTouchMove(e: TouchEvent) {
+  if (isTouching) {
+    const touch = e.touches[0];
+    currentX = touch.clientX * window.devicePixelRatio;
+    currentY = touch.clientY * window.devicePixelRatio;
+    if (!isDragging) {
+      isDragging = true;
+    }
+    emitDragEvent();
+  }
+}
+
+function emitDragEvent() {
+  const diffX = currentX - startX;
+  const diffY = currentY - startY;
+  emit(GameEvent.drag, {
+    detail: { diffX, diffY },
+  });
 }
 
 export function isUserTouching(): boolean {

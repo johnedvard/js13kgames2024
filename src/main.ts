@@ -11,6 +11,7 @@ import { SceneTransition } from "./SceneTransition";
 import { GameEvent } from "./GameEvent";
 
 import { BubbleButton } from "./BubbleButton";
+import { getColorBasedOnGasAmount } from "./colorUtils";
 
 const { canvas } = init("game");
 const { canvas: transitionCanvas } = init("transition");
@@ -53,6 +54,7 @@ function createLevelSelectButtons() {
 
   const gap = 150;
   const buttonWidth = 75;
+  console.log("canvas.width", canvas.width);
   const startPosX = -200;
   const startPosY = -200;
 
@@ -81,13 +83,39 @@ function createLevelSelectButtons() {
       GameEvent.play,
       { levelId }
     );
+
     selectLevelObjects.push(levelButton);
   });
+  const text = Text({
+    text: "Drag screen to see more levels",
+    font: "32px Arial",
+    color: getColorBasedOnGasAmount(1000),
+    x: 0,
+    y: 300,
+    anchor: { x: 0.5, y: 0.5 },
+    context: canvas.getContext("2d") as CanvasRenderingContext2D,
+  }); // TODO add text to button
+  selectLevelObjects.push(text);
 }
+
+let currentCanvasPos = Vector(0, 0);
+let scrollStartPos = Vector(0, 0);
+let startScroll = false;
+on(GameEvent.drag, ({ detail }: any) => {
+  currentCanvasPos = scrollStartPos.add(Vector(-detail.diffX, 0));
+  // TODO set max and min scroll
+});
 on(GameEvent.burstBalloon, (balloon: Balloon) => {
   balloon.particles.forEach((particle: any) => {
     levelPersistentObjects.push(particle);
   });
+});
+on(GameEvent.down, () => {
+  scrollStartPos = Vector(currentCanvasPos);
+  startScroll = true;
+});
+on(GameEvent.up, () => {
+  startScroll = false;
 });
 
 on(GameEvent.play, ({ levelId }: any) => {
@@ -98,6 +126,7 @@ on(GameEvent.play, ({ levelId }: any) => {
     transitionLoop.start();
   }, 500);
 });
+
 on(GameEvent.selectLevel, () => {
   setTimeout(() => {
     nextScene = "select";
@@ -112,6 +141,7 @@ const mainLoop = GameLoop({
       camera?.follow(Vector(0, 0));
       mainMenuObjects.forEach((object: any) => object.update());
     } else if (activeScene === "select") {
+      camera?.follow(currentCanvasPos);
       selectLevelObjects.forEach((object: any) => object.update());
     } else {
       _objects.forEach((object) => object.update());
@@ -161,10 +191,26 @@ const transitionLoop = GameLoop({
   },
 });
 
+const hudObjects: any[] = [];
+const scrollRightBtn = new BubbleButton(
+  hudCanvas,
+  100,
+  100,
+  50,
+  ">",
+  GameEvent.scroll,
+  { direction: "r" }
+);
+
+hudObjects.push(scrollRightBtn);
+
 const hudLoop = GameLoop({
-  update: function () {},
+  update: function () {
+    hudObjects.forEach((object: any) => object.update());
+  },
   render: function () {
-    // const context = hudCanvas.getContext("2d") as CanvasRenderingContext2D;
+    const context = hudCanvas.getContext("2d") as CanvasRenderingContext2D;
+    hudObjects.forEach((object: any) => object.render(context));
   },
 });
 
