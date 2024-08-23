@@ -11,6 +11,10 @@ import level5 from "./level5";
 import level6 from "./level6";
 import { Goal } from "./Goal";
 import { GAME_HEIGHT, GAME_WIDTH } from "./main";
+import { getItem } from "./storageUtils";
+import { BubbleButton } from "./BubbleButton";
+import { GameEvent } from "./GameEvent";
+import { getColorBasedOnGasAmount } from "./colorUtils";
 
 export const levels: Array<() => LevelObject> = [
   level1,
@@ -67,4 +71,55 @@ export function initLevel(
   });
 
   return { player, goal, gameObjects };
+}
+
+export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
+  const selectLevelObjects = [];
+  const gap = 150;
+  const buttonWidth = 75;
+  const startPosX = -200;
+  const startPosY = -200;
+
+  const buttonsPerRow = Math.ceil(levels.length / 2);
+
+  let a = 0; // used to calculate the correct level number
+  let b = 1; // used to calculate the correct level number
+  levels.forEach((_, index) => {
+    if (index > Math.ceil(levels.length / buttonsPerRow)) {
+      a = Math.ceil(levels.length / buttonsPerRow);
+      b = 2;
+    }
+    const row = Math.floor(index / buttonsPerRow);
+    const col = index % buttonsPerRow;
+    const x = startPosX + col * (buttonWidth + gap);
+    const y = startPosY + row * (buttonWidth + gap); // Adjust y position for each row
+
+    const levelId = (index + 1 - a) * 2 - b;
+    let buttonText = `Level ${levelId}`;
+    const isLevelComplete = getItem(`complete-${levelId}`);
+    if (isLevelComplete) buttonText += "\n    ✔";
+    const levelButton = new BubbleButton(
+      canvas,
+      x,
+      y,
+      buttonWidth,
+      buttonText,
+      30,
+      GameEvent.play,
+      { levelId }
+    );
+
+    selectLevelObjects.push(levelButton);
+  });
+  const text = Text({
+    text: "Drag screen to see more levels",
+    font: "32px Arial",
+    color: getColorBasedOnGasAmount(1000),
+    x: 0,
+    y: 300,
+    anchor: { x: 0.5, y: 0.5 },
+    context: canvas.getContext("2d") as CanvasRenderingContext2D,
+  }); // TODO add text to button
+  selectLevelObjects.push(text);
+  return selectLevelObjects;
 }
