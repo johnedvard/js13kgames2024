@@ -94,12 +94,14 @@ on(GameEvent.play, ({ levelId }: any) => {
   setTimeout(() => {
     currentLevelId = levelId;
     nextScene = "level";
+    sceneTransition.reset();
     transitionLoop.start();
   }, 500);
 });
 on(GameEvent.selectLevel, () => {
   setTimeout(() => {
     nextScene = "select";
+    sceneTransition.reset();
     transitionLoop.start();
   }, 500);
 });
@@ -223,6 +225,7 @@ function handleLevelClear() {
       isDisplayingLevelClearScreen = false;
       currentLevelId++;
       mainLoop.stop();
+      sceneTransition.reset();
       transitionLoop.start();
     }, 0);
   }
