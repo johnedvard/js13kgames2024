@@ -119,10 +119,6 @@ export class BubbleButton {
       }
       context.strokeStyle = getColorBasedOnGasAmount(0);
       context.lineWidth = 5;
-      if (this.fillColor) {
-        context.fillStyle = this.fillColor;
-        context.fill();
-      }
       context.stroke();
       context.setLineDash([]);
       context.restore(); // Restore the state of the context

@@ -11,7 +11,6 @@ import level5 from "./level5";
 import level6 from "./level6";
 import { Goal } from "./Goal";
 import { GAME_HEIGHT, GAME_WIDTH } from "./main";
-import { setItem } from "./storageUtils";
 
 export const levels: Array<() => LevelObject> = [
   level1,

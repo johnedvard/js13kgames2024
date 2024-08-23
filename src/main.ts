@@ -105,7 +105,6 @@ function createLevelSelectButtons() {
 
 let currentCanvasPos = Vector(0, 0);
 let scrollStartPos = Vector(0, 0);
-let startScroll = false;
 on(GameEvent.drag, ({ detail }: any) => {
   currentCanvasPos = scrollStartPos.add(Vector(-detail.diffX, 0));
   // TODO set max and min scroll
@@ -117,10 +116,6 @@ on(GameEvent.burstBalloon, (balloon: Balloon) => {
 });
 on(GameEvent.down, () => {
   scrollStartPos = Vector(currentCanvasPos);
-  startScroll = true;
-});
-on(GameEvent.up, () => {
-  startScroll = false;
 });
 
 on(GameEvent.play, ({ levelId }: any) => {
