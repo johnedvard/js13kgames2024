@@ -26,6 +26,7 @@ export class BubbleButton {
     y: number,
     radius: number,
     text: string,
+    fontSize: number = 40,
     private gameEvent: GameEvent,
     private gameEventArgs: any
   ) {
@@ -35,7 +36,7 @@ export class BubbleButton {
     on(GameEvent.up, this.onUp);
     this.text = Text({
       text,
-      font: "40px Arial",
+      font: `${fontSize}px Arial`,
       color: getColorBasedOnGasAmount(0),
       x: x,
       y: y,
@@ -118,6 +119,10 @@ export class BubbleButton {
       }
       context.strokeStyle = getColorBasedOnGasAmount(0);
       context.lineWidth = 5;
+      if (this.fillColor) {
+        context.fillStyle = this.fillColor;
+        context.fill();
+      }
       context.stroke();
       context.setLineDash([]);
       context.restore(); // Restore the state of the context

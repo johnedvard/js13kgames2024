@@ -12,6 +12,7 @@ import { GameEvent } from "./GameEvent";
 
 import { BubbleButton } from "./BubbleButton";
 import { getColorBasedOnGasAmount } from "./colorUtils";
+import { getItem, setItem } from "./storageUtils";
 
 const { canvas } = init("game");
 const { canvas: transitionCanvas } = init("transition");
@@ -43,6 +44,7 @@ const playBtn = new BubbleButton(
   -120,
   75,
   "Play",
+  40,
   GameEvent.selectLevel,
   {}
 );
@@ -73,13 +75,16 @@ function createLevelSelectButtons() {
     const y = startPosY + row * (buttonWidth + gap); // Adjust y position for each row
 
     const levelId = (index + 1 - a) * 2 - b;
-    const buttonText = `Level ${levelId}`;
+    let buttonText = `Level ${levelId}`;
+    const isLevelComplete = getItem(`complete-${levelId}`);
+    if (isLevelComplete) buttonText += "\n    ✔";
     const levelButton = new BubbleButton(
       canvas,
       x,
       y,
       buttonWidth,
       buttonText,
+      30,
       GameEvent.play,
       { levelId }
     );
@@ -192,17 +197,6 @@ const transitionLoop = GameLoop({
 });
 
 const hudObjects: any[] = [];
-const scrollRightBtn = new BubbleButton(
-  hudCanvas,
-  100,
-  100,
-  50,
-  ">",
-  GameEvent.scroll,
-  { direction: "r" }
-);
-
-hudObjects.push(scrollRightBtn);
 
 const hudLoop = GameLoop({
   update: function () {
@@ -269,6 +263,7 @@ function handleLevelClear() {
     setTimeout(() => {
       _objects.length = 0;
       isDisplayingLevelClearScreen = false;
+      setItem(`complete-${currentLevelId}`, "true");
       currentLevelId++;
       mainLoop.stop();
       sceneTransition.reset();
