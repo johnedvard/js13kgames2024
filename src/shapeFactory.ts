@@ -1,10 +1,11 @@
 import { Vector } from "kontra";
-import { RigidBody } from "./RigidBody";
+import { RigidBody, RigidBodyOptions } from "./RigidBody";
 
 export function createBox(
   pos: Vector,
   width: number,
-  height: number
+  height: number,
+  options?: RigidBodyOptions
 ): RigidBody {
   const particlePos = [
     Vector(pos),
@@ -12,5 +13,5 @@ export function createBox(
     Vector(pos.x + width, pos.y + height),
     Vector(pos.x, pos.y + height),
   ];
-  return new RigidBody(particlePos);
+  return new RigidBody(particlePos, options);
 }

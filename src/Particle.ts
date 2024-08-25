@@ -9,18 +9,23 @@ export class Particle {
   force: Vector = Vector(GRAVITY);
   pos: Vector = Vector(0, 0);
   radius: number = 0.5;
+  baseSpeed = Vector(0, 0);
   constructor(pos: Vector) {
     this.pos = Vector(pos);
   }
   applyForce(force: Vector) {
     this.force = this.force.add(force);
   }
+  setSpeed(speed: Vector) {
+    this.baseSpeed = Vector(speed);
+    this.velocity = Vector(speed);
+  }
   update() {
     const acceleration = Vector(
       this.force.x / this.mass,
       this.force.y / this.mass
     );
-    this.velocity = this.velocity.add(acceleration);
+    this.velocity = this.velocity.add(acceleration).add(this.baseSpeed);
     this.velocity.clamp(-MAX_SPEED, -MAX_SPEED, MAX_SPEED, MAX_SPEED);
 
     this.pos = this.pos.add(this.velocity);

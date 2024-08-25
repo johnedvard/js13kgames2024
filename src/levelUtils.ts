@@ -9,8 +9,8 @@ import level3 from "./level3";
 import level4 from "./level4";
 import level5 from "./level5";
 import level6 from "./level6";
+import level7 from "./level7";
 import { Goal } from "./Goal";
-import { GAME_HEIGHT, GAME_WIDTH } from "./main";
 import { getItem } from "./storageUtils";
 import { BubbleButton } from "./BubbleButton";
 import { GameEvent } from "./GameEvent";
@@ -23,23 +23,10 @@ export const levels: Array<() => LevelObject> = [
   level4,
   level5,
   level6,
+  level7,
+  level7,
+  level7,
 ];
-
-export function topWall() {
-  return {
-    box: { pos: Vector(-100, -100), width: GAME_WIDTH + 200, height: 100 },
-  };
-}
-
-export function bottomWall() {
-  return {
-    box: {
-      pos: Vector(-100, GAME_HEIGHT),
-      width: GAME_WIDTH + 200,
-      height: 100,
-    },
-  };
-}
 
 export function initLevel(
   canvas: HTMLCanvasElement,
@@ -56,7 +43,12 @@ export function initLevel(
   level.objects.forEach((object: any) => {
     if (object.box) {
       gameObjects.push(
-        createBox(object.box.pos, object.box.width, object.box.height)
+        createBox(
+          object.box.pos,
+          object.box.width,
+          object.box.height,
+          object.box?.options
+        )
       );
     } else if (object.text) {
       const text = Text({
@@ -74,43 +66,35 @@ export function initLevel(
 }
 
 export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
-  const selectLevelObjects = [];
+  const selectLevelObjects: any[] = [];
   const gap = 150;
   const buttonWidth = 75;
-  const startPosX = -200;
-  const startPosY = -200;
+  const startPosX = -400;
+  const startPosY = -400;
+  for (let col = 1; col <= levels.length / 2; col++) {
+    for (let row = 1; row <= 2; row++) {
+      const x = startPosX + col * (buttonWidth + gap);
+      const y = startPosY + row * (buttonWidth + gap);
+      let levelId = col * 2;
+      if (row === 1) levelId -= 1;
+      let buttonText = `Level ${levelId}`;
+      const isLevelComplete = getItem(`complete-${levelId}`);
+      if (isLevelComplete) buttonText += "\n    ✔";
+      const levelButton = new BubbleButton(
+        canvas,
+        x,
+        y,
+        buttonWidth,
+        buttonText,
+        30,
+        GameEvent.play,
+        { levelId }
+      );
 
-  const buttonsPerRow = Math.ceil(levels.length / 2);
-
-  let a = 0; // used to calculate the correct level number
-  let b = 1; // used to calculate the correct level number
-  levels.forEach((_, index) => {
-    if (index > Math.ceil(levels.length / buttonsPerRow)) {
-      a = Math.ceil(levels.length / buttonsPerRow);
-      b = 2;
+      selectLevelObjects.push(levelButton);
     }
-    const row = Math.floor(index / buttonsPerRow);
-    const col = index % buttonsPerRow;
-    const x = startPosX + col * (buttonWidth + gap);
-    const y = startPosY + row * (buttonWidth + gap); // Adjust y position for each row
+  }
 
-    const levelId = (index + 1 - a) * 2 - b;
-    let buttonText = `Level ${levelId}`;
-    const isLevelComplete = getItem(`complete-${levelId}`);
-    if (isLevelComplete) buttonText += "\n    ✔";
-    const levelButton = new BubbleButton(
-      canvas,
-      x,
-      y,
-      buttonWidth,
-      buttonText,
-      30,
-      GameEvent.play,
-      { levelId }
-    );
-
-    selectLevelObjects.push(levelButton);
-  });
   const text = Text({
     text: "Drag screen to see more levels",
     font: "32px Arial",

@@ -1,4 +1,5 @@
 import { Vector } from "kontra";
+import { Particle } from "./Particle";
 
 export function rayIntersectsSegment(
   p: Vector,
@@ -82,4 +83,10 @@ export function isPointInsideCircle(
 
 export function smoothstep(t: number): number {
   return t * t * (3 - 2 * t);
+}
+
+export function getCenterPoint(particles: Particle[]) {
+  return particles
+    .reduce((acc, particle) => acc.add(particle.pos), Vector(0, 0))
+    .scale(1 / particles.length);
 }

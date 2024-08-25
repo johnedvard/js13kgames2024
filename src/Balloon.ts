@@ -1,7 +1,7 @@
 import { Text, Vector, emit } from "kontra";
 import { Particle } from "./Particle";
 import { Spring } from "./Spring";
-import { catmullRomSpline } from "./mathUtils";
+import { catmullRomSpline, getCenterPoint } from "./mathUtils";
 import { isUserTouching } from "./inputController";
 import { GameEvent } from "./GameEvent";
 import { getColorBasedOnGasAmount } from "./colorUtils";
@@ -144,9 +144,7 @@ export class Balloon {
         particle.applyForce(this.balloonGravity.add(this.externalForce));
       });
     }
-    this.centerPoint = this.particles
-      .reduce((acc, particle) => acc.add(particle.pos), Vector(0, 0))
-      .scale(1 / this.particles.length);
+    this.centerPoint = getCenterPoint(this.particles);
 
     this.handleGasInput();
     this.updateBalloonGravity();

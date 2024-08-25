@@ -1,29 +1,35 @@
 import { Vector } from "kontra";
-import { GAME_HEIGHT, GAME_WIDTH } from "./main";
-import { bottomWall, topWall } from "./levelUtils";
+import { GAME_HEIGHT } from "./main";
 
 export default function getLevel() {
   return {
-    playerPos: Vector(150, GAME_HEIGHT - 350),
-    goalPos: Vector(GAME_WIDTH / 2 + 550, GAME_HEIGHT - 80),
+    playerPos: Vector(150, GAME_HEIGHT - 220),
+    goalPos: Vector(4500 + 150, GAME_HEIGHT + 320),
     objects: [
-      { box: { pos: Vector(900, GAME_HEIGHT - 350), width: 350, height: 350 } },
+      // first ramp
       {
         box: {
-          pos: Vector(-100, GAME_HEIGHT - 1150),
-          width: GAME_WIDTH + 200,
-          height: 200,
+          pos: Vector(-100, GAME_HEIGHT),
+          width: 1500,
+          height: 100,
         },
       },
+      // second ramp
       {
         box: {
-          pos: Vector(700, GAME_HEIGHT - 150),
-          width: 150,
-          height: 150,
+          pos: Vector(1500 + 250, GAME_HEIGHT + 200),
+          width: 1500,
+          height: 100,
         },
       },
-      topWall(),
-      bottomWall(),
+      // third ramp
+      {
+        box: {
+          pos: Vector(3000 + 540, GAME_HEIGHT + 400),
+          width: 1800,
+          height: 100,
+        },
+      },
     ],
   };
 }

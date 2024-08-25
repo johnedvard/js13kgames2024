@@ -18,7 +18,6 @@ function scaleCanvas() {
     // Scale the canvas context to match the device pixel ratio
     const context = canvas.getContext("2d");
     if (context) {
-      console.log("scale");
       context.scale(devicePixelRatio, devicePixelRatio);
     }
   });

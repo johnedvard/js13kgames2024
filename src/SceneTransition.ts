@@ -31,7 +31,6 @@ export class SceneTransition {
     if (this.state === "fadein" && this.isFadeInComplete()) {
       this.state = "fadeout";
     } else if (this.state === "fadeout" && this.isFadeOutComplete()) {
-      console.log("this tate", this.state);
       this.state = "comeplete";
     }
   }
