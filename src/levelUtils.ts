@@ -70,6 +70,7 @@ export function initLevel(
           isStationairy: true,
           hideText: true,
           hideParticles: true,
+          ...object.enemy.options,
         })
       );
     }

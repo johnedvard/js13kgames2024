@@ -7,4 +7,5 @@ export enum GameEvent {
   selectLevel = "sl",
   scroll = "s",
   drag = "dr",
+  kill = "k",
 }

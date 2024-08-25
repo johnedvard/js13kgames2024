@@ -11,11 +11,11 @@ export default function getLevel() {
       {
         text: {
           pos: Vector(100, 200),
-          text: "Stick to others, some are friendly",
+          text: "Some bubbles are friendly",
         },
       },
-      { enemy: { pos: Vector(500, -20) } },
-      { enemy: { pos: Vector(860, -50) } },
+      { enemy: { pos: Vector(500, -20), options: { balloonType: "friend" } } },
+      { enemy: { pos: Vector(860, -50), options: { balloonType: "friend" } } },
     ],
   };
 }

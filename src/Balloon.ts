@@ -8,6 +8,7 @@ import { getColorBasedOnGasAmount } from "./colorUtils";
 
 const MING_GAS_AMOUNT = 10000;
 
+type BalloonType = "friend" | "foe" | "player";
 type BalloonOptions = {
   numParticles?: number;
   length?: number;
@@ -17,6 +18,7 @@ type BalloonOptions = {
   lineWidth?: number;
   hideText?: boolean;
   hideParticles?: boolean;
+  balloonType?: BalloonType;
 };
 export class Balloon {
   state: "" | "dead" = "";
@@ -27,10 +29,12 @@ export class Balloon {
   centerPoint: Vector = Vector(0, 0); // Center point of the balloon
   balloonGravity: Vector = Vector(0, 0); // calculated Gravity acting on the preassure in the balloon
   isStationairy: boolean = false;
+  balloonType: BalloonType = "player";
   text!: Text;
   lineWidth = 10;
   hideParticles = false;
   externalForce = Vector(0, 0); // force that can be applied to the balloon from outside
+  isBalloon = true;
 
   gasAmount: number = 70000; // Number of moles of gas
   R: number = 0.3; // Ideal gas constant
@@ -56,6 +60,7 @@ export class Balloon {
     this.gasAmount = ballonOptions?.gasAmount || 65000;
     this.lineWidth = ballonOptions?.lineWidth || 10;
     this.hideParticles = ballonOptions?.hideParticles || false;
+    this.balloonType = ballonOptions?.balloonType || "player";
     const numParticles = ballonOptions?.numParticles || 20;
     const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
     const length = ballonOptions?.length || 10;
@@ -183,7 +188,6 @@ export class Balloon {
     }
     if (this.gasAmount > 130999) {
       this.setState("dead");
-      emit(GameEvent.burstBalloon, this);
     }
   }
 
@@ -191,6 +195,7 @@ export class Balloon {
     this.state = state;
     switch (state) {
       case "dead":
+        emit(GameEvent.burstBalloon, this);
         this.springs.length = 0;
         break;
     }
@@ -227,7 +232,13 @@ export class Balloon {
     // Create a spline through all the points in the particles array
     context.beginPath();
     context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
-    context.strokeStyle = getColorBasedOnGasAmount(this.gasAmount);
+    if (this.balloonType === "foe") {
+      context.strokeStyle = getColorBasedOnGasAmount(130000);
+    } else if (this.balloonType === "friend") {
+      context.strokeStyle = "#1c2";
+    } else {
+      context.strokeStyle = getColorBasedOnGasAmount(this.gasAmount);
+    }
     context.lineWidth = this.lineWidth;
     const vertices = this.particles.map((p) => p.pos);
 
