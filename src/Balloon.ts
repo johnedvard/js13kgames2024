@@ -35,6 +35,8 @@ export class Balloon {
   hideParticles = false;
   externalForce = Vector(0, 0); // force that can be applied to the balloon from outside
   isBalloon = true;
+  hideText = false;
+  ellapsedDeadTime = 0;
 
   gasAmount: number = 70000; // Number of moles of gas
   R: number = 0.3; // Ideal gas constant
@@ -45,17 +47,17 @@ export class Balloon {
     startPos: Vector,
     ballonOptions?: BalloonOptions
   ) {
-    if (!ballonOptions?.hideText) {
-      this.text = Text({
-        text: "",
-        font: "32px Arial",
-        color: "white",
-        x: 300,
-        y: 100,
-        anchor: { x: 0.7, y: 0.2 },
-        context: canvas.getContext("2d") as CanvasRenderingContext2D,
-      });
-    }
+    this.hideText = ballonOptions?.hideText || false;
+
+    this.text = Text({
+      text: "",
+      font: "32px Arial",
+      color: "white",
+      x: 300,
+      y: 100,
+      anchor: { x: 0.7, y: 0.2 },
+      context: canvas.getContext("2d") as CanvasRenderingContext2D,
+    });
 
     this.gasAmount = ballonOptions?.gasAmount || 65000;
     this.lineWidth = ballonOptions?.lineWidth || 10;
@@ -139,10 +141,13 @@ export class Balloon {
 
   update() {
     if (this.state === "dead") {
-      this.particles.forEach((particle) => {
-        particle.applyForce(this.balloonGravity.add(this.externalForce));
-        particle.update();
-      });
+      this.ellapsedDeadTime += 1000 / 60;
+      if (this.ellapsedDeadTime <= 2000) {
+        this.particles.forEach((particle) => {
+          particle.applyForce(this.balloonGravity.add(this.externalForce));
+          particle.update();
+        });
+      }
     } else {
       this.springs.forEach((spring) => spring.update());
       this.particles.forEach((particle) => {
@@ -211,21 +216,33 @@ export class Balloon {
 
     this.renderOutline(context);
 
-    this.renderGasAmount({
-      x: this.centerPoint.x + 10,
-      y: this.centerPoint.y - 10,
-    });
+    this.renderGasAmount(
+      Vector(this.centerPoint.x + 10, this.centerPoint.y - 10)
+    );
+    this.renderEnemyText(
+      Vector(this.centerPoint.x + 10, this.centerPoint.y - 10)
+    );
   }
 
-  renderGasAmount(position: { x: number; y: number }) {
-    if (!this.text) return;
+  renderEnemyText(pos: Vector) {
+    if (this.balloonType === "foe") {
+      this.text.text = "XIII";
+      this.text.color = getColorBasedOnGasAmount(130000);
+      this.text.x = pos.x;
+      this.text.y = pos.y;
+      this.text.render();
+    }
+  }
+
+  renderGasAmount(pos: Vector) {
+    if (this.hideText) return;
     const maxGasAmount = 130000;
     const gasValue = (this.gasAmount / maxGasAmount) * 13;
     const gasValueRounded = gasValue.toFixed(1);
     this.text.text = gasValueRounded;
     this.text.color = getColorBasedOnGasAmount(this.gasAmount);
-    this.text.x = position.x;
-    this.text.y = position.y;
+    this.text.x = pos.x;
+    this.text.y = pos.y;
     this.text.render();
   }
   renderOutline(context: CanvasRenderingContext2D) {
