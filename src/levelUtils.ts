@@ -1,4 +1,4 @@
-import { Text } from "kontra";
+import { Text, Vector } from "kontra";
 import { createBox } from "./shapeFactory";
 import { Balloon } from "./Balloon";
 import { Camera } from "./Camera";
@@ -11,6 +11,8 @@ import level5 from "./level5";
 import level6 from "./level6";
 import level7 from "./level7";
 import level8 from "./level8";
+import level9 from "./level9";
+import level10 from "./level10";
 import { Goal } from "./Goal";
 import { getItem } from "./storageUtils";
 import { BubbleButton } from "./BubbleButton";
@@ -26,6 +28,8 @@ export const levels: Array<() => LevelObject> = [
   level6,
   level7,
   level8,
+  level9,
+  level10,
 ];
 
 export function initLevel(
@@ -59,6 +63,15 @@ export function initLevel(
         context: canvas.getContext("2d") as CanvasRenderingContext2D,
       });
       gameObjects.push(text);
+    } else if (object.enemy) {
+      gameObjects.push(
+        new Balloon(canvas, Vector(object.enemy.pos), {
+          stiffness: 0.08, // the lighter, the less likely to entagle. 0.05 is light, can move around
+          isStationairy: true,
+          hideText: true,
+          hideParticles: true,
+        })
+      );
     }
   });
 

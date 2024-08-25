@@ -181,6 +181,15 @@ async function startLevel(scene: SceneId = "menu") {
   _player = player;
   _goal = goal;
   _objects = gameObjects;
+  // _objects.push(new Enemy(Vector(0, -200)));
+  // _objects.push(
+  //   new Balloon(canvas, Vector(200, -200), {
+  //     isStationairy: true,
+  //     lineWidth: 3,
+  //     hideText: true,
+  //     hideParticles: true,
+  //   })
+  // );
   _objects.splice(0, 0, _player);
   _objects.splice(0, 0, goal);
   // todo cleanup existing objects
