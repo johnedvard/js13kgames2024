@@ -18,6 +18,7 @@ export class BubbleButton {
   private directionRadius = 1;
   private lineDashLength = 100;
   private lineDashGap = 50;
+  isDestroyed = false;
   isClicked = false;
 
   constructor(
@@ -46,7 +47,7 @@ export class BubbleButton {
   }
 
   onUp = (pos: Vector) => {
-    if (this.isClicked) return;
+    if (this.isClicked || this.isDestroyed) return;
     const transform = this.canvas.getContext("2d")?.getTransform();
     if (!transform) return;
     if (
@@ -64,6 +65,7 @@ export class BubbleButton {
   };
 
   update() {
+    if (this.isDestroyed) return;
     this.time += 10 * this.direction;
     this.timeRadius += 5 * this.directionRadius;
     const tY = (this.time % this.duration) / this.duration;
@@ -103,6 +105,7 @@ export class BubbleButton {
   }
 
   render(context: CanvasRenderingContext2D) {
+    if (this.isDestroyed) return;
     if (this.baseRadius <= 500) {
       context.save(); // Save the current state of the context
 
@@ -150,5 +153,10 @@ export class BubbleButton {
       });
       this.smallCircles.push(smallCircle);
     }
+  }
+
+  destroy() {
+    this.isDestroyed = true;
+    off(GameEvent.up, this.onUp);
   }
 }

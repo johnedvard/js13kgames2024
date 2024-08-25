@@ -121,6 +121,12 @@ const mainLoop = GameLoop({
   },
 });
 
+function destroySelectLevelObjects() {
+  selectLevelObjects.forEach((object: any) => {
+    if (object?.destroy) object.destroy();
+  });
+}
+
 const transitionLoop = GameLoop({
   update: function () {
     sceneTransition?.update();
@@ -130,6 +136,7 @@ const transitionLoop = GameLoop({
         activeScene = "select";
       } else if (nextScene === "level") {
         startLevel("level");
+        destroySelectLevelObjects();
       }
     } else if (sceneTransition.isFadeOutComplete()) {
       fadeinComplete = false;

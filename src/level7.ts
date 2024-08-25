@@ -17,6 +17,7 @@ export default function getLevel() {
           options: {
             path: { x: 500, y: 0 },
             speed: { x: 1.5, y: 0 },
+            direction: -1,
           },
         },
       },

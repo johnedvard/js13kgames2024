@@ -7,6 +7,7 @@ import { getColorBasedOnGasAmount } from "./colorUtils";
 export type RigidBodyOptions = {
   speed?: Vector;
   path?: Vector; // the path is the distance the rigid body will from its original position
+  direction?: number;
 };
 
 export class RigidBody {
@@ -27,9 +28,11 @@ export class RigidBody {
     this.pos = particlePos[0];
     this.path = options.path ? Vector(options.path) : Vector(0, 0);
     this.speed = options.speed ? Vector(options.speed) : Vector(0, 0);
+    this.direction = options.direction || 0;
+    console.log(this.direction);
     particlePos.forEach((pos) => {
       const p = new Particle(Vector(pos));
-      p.setSpeed(this.speed);
+      p.setSpeed(this.speed.scale(this.direction));
       this.particles.push(p);
     });
     this.initialCenterPoint = getCenterPoint(this.particles);
