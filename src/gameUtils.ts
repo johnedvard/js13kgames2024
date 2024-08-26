@@ -2,6 +2,7 @@ import { Vector } from "kontra";
 import { projectPointOntoSegment, rayIntersectsSegment } from "./mathUtils";
 import { Particle } from "./Particle";
 import { Spring } from "./Spring";
+import { Balloon } from "./Balloon";
 
 export function handleCollision(objects: any[]) {
   let closestPointOnLine: Vector | null = null;
@@ -17,7 +18,7 @@ export function handleCollision(objects: any[]) {
           if (!otherObject.springs) continue;
           otherObject.springs.forEach((spring: Spring) => {
             if (
-              object?.isBalloon &&
+              (object?.isBalloon || object?.isSpike) &&
               rayIntersectsSegment(particle.pos, spring.p1.pos, spring.p2.pos)
             ) {
               intersections++;
@@ -45,6 +46,10 @@ export function handleCollision(objects: any[]) {
           object?.setState("dead");
           closestOtherObject?.setState("dead");
         }
+        if (checkIfKillSpike(object, closestOtherObject)) {
+          console.log("Killed by spike");
+          object?.setState("dead");
+        }
         particle.pos = Vector(closestPointOnLine);
         particle.velocity = particle.velocity.scale(-1); // adjust the velocity to simulate a bounce
       }
@@ -61,4 +66,8 @@ function checkIfKillBalloons(a: any, b: any) {
     b?.state !== "dead" &&
     (a?.balloonType === "foe" || b?.balloonType === "foe")
   );
+}
+
+function checkIfKillSpike(a: any, b: any): a is Balloon {
+  return a !== b && a?.isBalloon && b?.isSpike && a?.state !== "dead";
 }

@@ -15,12 +15,16 @@ import level9 from "./level9";
 import level10 from "./level10";
 import level11 from "./level11";
 import level12 from "./level12";
+import level13 from "./level13";
+import level14 from "./level14";
 import { Goal } from "./Goal";
 import { getItem } from "./storageUtils";
 import { BubbleButton } from "./BubbleButton";
 import { GameEvent } from "./GameEvent";
 import { getColorBasedOnGasAmount } from "./colorUtils";
+import { Spike } from "./Spike";
 
+// Keep an odd number of levels to make it work.
 export const levels: Array<() => LevelObject> = [
   level1,
   level2,
@@ -34,6 +38,9 @@ export const levels: Array<() => LevelObject> = [
   level10,
   level11,
   level12,
+  level13, // level 13 is special, it's not a playable level
+  level14,
+  level14,
 ];
 
 export function initLevel(
@@ -77,6 +84,10 @@ export function initLevel(
           ...object.enemy.options,
         })
       );
+    } else if (object.spike) {
+      gameObjects.push(
+        new Spike(Vector(object.spike.pos), object.spike.options)
+      );
     }
   });
 
@@ -95,9 +106,13 @@ export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
       const y = startPosY + row * (buttonWidth + gap);
       let levelId = col * 2;
       if (row === 1) levelId -= 1;
+      if (levelId >= 13) levelId += 1;
       let buttonText = `Level ${levelId}`;
       const isLevelComplete = getItem(`complete-${levelId}`);
-      if (isLevelComplete) buttonText += "\n    ✔";
+      if (isLevelComplete) {
+        if (levelId < 10) buttonText += "\n    ✔";
+        if (levelId >= 10) buttonText += "\n     ✔"; // center align the checkmark by adding an extra space
+      }
       const levelButton = new BubbleButton(
         canvas,
         x,

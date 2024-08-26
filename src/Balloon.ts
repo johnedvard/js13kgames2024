@@ -66,7 +66,7 @@ export class Balloon {
     const numParticles = ballonOptions?.numParticles || 20;
     const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
     const length = ballonOptions?.length || 10;
-    const stiffness = ballonOptions?.stiffness || 0.09;
+    const stiffness = ballonOptions?.stiffness || 0.08;
     this.isStationairy = ballonOptions?.isStationairy || false;
     const angleStep = (2 * Math.PI) / numParticles;
 

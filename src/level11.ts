@@ -7,7 +7,7 @@ let boxHeight = 200;
 export default function getLevel() {
   return {
     playerPos: Vector(150, h - 350),
-    goalPos: Vector(w / 2 + 550, h - 80),
+    goalPos: Vector(w / 2 + 1150, h - 80),
     objects: [
       // first stair case
       {
@@ -43,7 +43,7 @@ export default function getLevel() {
       {
         box: {
           pos: Vector(-100, h),
-          width: w + 200,
+          width: w + 900,
           height: 100,
         },
       },

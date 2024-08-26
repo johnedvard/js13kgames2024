@@ -8,6 +8,8 @@ export type RigidBodyOptions = {
   speed?: Vector;
   path?: Vector; // the path is the distance the rigid body will from its original position
   direction?: number;
+  stiffness?: number;
+  gravity?: Vector;
 };
 
 export class RigidBody {
@@ -22,10 +24,14 @@ export class RigidBody {
   centerPoint = Vector(0, 0);
   initialCenterPoint = Vector(0, 0);
   direction = 1;
+  stiffness = 1;
+  gravity = Vector(0, 0);
 
   constructor(particlePos: Vector[], options: RigidBodyOptions = {}) {
+    this.stiffness = options.stiffness || 1;
     this.startPos = particlePos[0];
     this.pos = particlePos[0];
+    this.gravity = options?.gravity ? Vector(options.gravity) : Vector(0, 0);
     this.path = options.path ? Vector(options.path) : Vector(0, 0);
     this.speed = options.speed ? Vector(options.speed) : Vector(0, 0);
     this.direction = options.direction || 0;
@@ -40,7 +46,12 @@ export class RigidBody {
       const nextIndex = (index + 1) % particlePos.length;
       const width = pos.distance(particlePos[nextIndex]);
       this.springs.push(
-        new Spring(this.particles[index], this.particles[nextIndex], width, 1)
+        new Spring(
+          this.particles[index],
+          this.particles[nextIndex],
+          width,
+          this.stiffness
+        )
       );
     });
   }
@@ -81,7 +92,11 @@ export class RigidBody {
     this.handlePathMovement();
     // Update the position of the rigid body
     this.particles.forEach((particle) => {
+      particle.applyForce(this.gravity);
       particle.update();
+    });
+    this.springs.forEach((spring) => {
+      spring.update();
     });
     this.centerPoint = getCenterPoint(this.particles);
   }
