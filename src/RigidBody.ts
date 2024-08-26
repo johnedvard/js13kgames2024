@@ -95,9 +95,7 @@ export class RigidBody {
       particle.applyForce(this.gravity);
       particle.update();
     });
-    this.springs.forEach((spring) => {
-      spring.update();
-    });
+
     this.centerPoint = getCenterPoint(this.particles);
   }
   render(context: CanvasRenderingContext2D) {

@@ -227,6 +227,7 @@ function handleLevelClear() {
       isDisplayingLevelClearScreen = false;
       setItem(`complete-${currentLevelId}`, "true");
       currentLevelId++;
+      if (currentLevelId === 13) currentLevelId++;
       mainLoop.stop();
       sceneTransition.reset();
       transitionLoop.start();
