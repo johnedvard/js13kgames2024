@@ -22,7 +22,6 @@ export class Spike {
   }
   update() {
     this.rigidBody.update();
-    this.rigidBody.springs.forEach((spring) => spring.update());
   }
 
   render(context: CanvasRenderingContext2D) {
