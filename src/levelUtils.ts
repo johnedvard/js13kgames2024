@@ -17,6 +17,7 @@ import level11 from "./level11";
 import level12 from "./level12";
 import level13 from "./level13";
 import level14 from "./level14";
+import level15 from "./level15";
 import { Goal } from "./Goal";
 import { getItem } from "./storageUtils";
 import { BubbleButton } from "./BubbleButton";
@@ -40,7 +41,7 @@ export const levels: Array<() => LevelObject> = [
   level12,
   level13, // level 13 is special, it's not a playable level
   level14,
-  level14,
+  level15,
 ];
 
 export function initLevel(
