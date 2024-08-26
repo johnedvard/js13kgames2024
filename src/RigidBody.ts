@@ -89,11 +89,32 @@ export class RigidBody {
     this.particles.forEach((particle) => {
       particle.render(context);
     });
-
     this.springs.forEach((spring) => {
       spring.render(context, this);
     });
+
+    this.renderRigidBody(context);
     this.renderPath(context);
+  }
+  renderRigidBody(context: CanvasRenderingContext2D) {
+    if (!this.particles.length) return;
+    context.save();
+    context.beginPath();
+
+    // Move to the first particle
+    context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
+
+    // Draw lines to each subsequent particle
+    for (let i = 1; i < this.particles.length; i++) {
+      context.lineTo(this.particles[i].pos.x, this.particles[i].pos.y);
+    }
+
+    // Close the path and fill the shape
+    context.closePath();
+    context.fillStyle = "rgba(255, 255, 255, 0.1)";
+    context.fill();
+
+    context.restore();
   }
   renderPath(context: CanvasRenderingContext2D) {
     if (!this.path) return;

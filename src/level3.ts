@@ -10,7 +10,7 @@ export default function getLevel() {
     objects: [
       // larger box bottom
       { box: { pos: Vector(1900, h - 350), width: 350, height: 350 } },
-
+      { text: { pos: Vector(710, h - 50), text: "Hold to go ⇧" } },
       // box on left, small
       {
         box: {

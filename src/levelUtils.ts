@@ -13,6 +13,8 @@ import level7 from "./level7";
 import level8 from "./level8";
 import level9 from "./level9";
 import level10 from "./level10";
+import level11 from "./level11";
+import level12 from "./level12";
 import { Goal } from "./Goal";
 import { getItem } from "./storageUtils";
 import { BubbleButton } from "./BubbleButton";
@@ -30,6 +32,8 @@ export const levels: Array<() => LevelObject> = [
   level8,
   level9,
   level10,
+  level11,
+  level12,
 ];
 
 export function initLevel(
