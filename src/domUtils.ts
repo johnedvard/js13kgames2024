@@ -1,8 +1,5 @@
 let resizeTimeout: number | undefined;
 
-// document.addEventListener("contextmenu", function (e) {
-//   e.preventDefault();
-// });
 let gameCanvases: HTMLCanvasElement[];
 
 function scaleCanvas() {
