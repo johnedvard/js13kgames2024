@@ -78,6 +78,7 @@ function onTouchStart(e: TouchEvent) {
   startY = touch.clientY * window.devicePixelRatio;
   emit(GameEvent.down, Vector(startX, startY));
   e.preventDefault();
+  playSong();
   return false;
 }
 
