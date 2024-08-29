@@ -1,5 +1,6 @@
 import { Vector, emit } from "kontra";
 import { GameEvent } from "./GameEvent";
+import { playSong } from "./audio";
 
 let isTouching = false;
 let isDragging = false;
@@ -54,6 +55,7 @@ function onMouseUp(e: MouseEvent) {
 
   isTouching = false;
   isDragging = false;
+  playSong();
   emit(GameEvent.up, Vector(startX, startY));
 }
 

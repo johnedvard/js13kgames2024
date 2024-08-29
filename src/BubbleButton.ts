@@ -3,6 +3,7 @@ import { isPointInsideCircle, smoothstep } from "./mathUtils";
 import { getColorBasedOnGasAmount } from "./colorUtils";
 import { GameEvent } from "./GameEvent";
 import { Balloon } from "./Balloon";
+import { playBubble, playthap } from "./audio";
 
 export class BubbleButton {
   private circlePos = Vector(0, 0);
@@ -57,6 +58,8 @@ export class BubbleButton {
         this.circleRadius
       )
     ) {
+      playthap();
+      playBubble();
       this.isClicked = true;
       off(GameEvent.up, this.onUp);
       emit(this.gameEvent, this.gameEventArgs);
