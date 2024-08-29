@@ -18,7 +18,7 @@ export function initializeInputController(canvas: HTMLCanvasElement) {
   _canvas.addEventListener("mousemove", onMouseMove);
 
   // Touch events
-  _canvas.addEventListener("touchstart", onTouchStart);
+  _canvas.addEventListener("touchstart", onTouchStart, { passive: false });
   _canvas.addEventListener("touchend", onTouchEnd);
   _canvas.addEventListener("touchmove", onTouchMove);
 }
@@ -77,6 +77,8 @@ function onTouchStart(e: TouchEvent) {
   startX = touch.clientX * window.devicePixelRatio;
   startY = touch.clientY * window.devicePixelRatio;
   emit(GameEvent.down, Vector(startX, startY));
+  e.preventDefault();
+  return false;
 }
 
 function onTouchEnd(e: TouchEvent) {
