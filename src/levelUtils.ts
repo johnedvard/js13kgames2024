@@ -26,33 +26,31 @@ import { getColorBasedOnGasAmount } from "./colorUtils";
 import { Spike } from "./Spike";
 
 // Keep an odd number of levels to make it work.
-function getLevels() {
-  const levels: Array<() => LevelObject> = [
-    level1,
-    level2,
-    level3,
-    level4,
-    level5,
-    level6,
-    level7,
-    level8,
-    level9,
-    level10,
-    level11,
-    level12,
-    level13, // level 13 is special, it's not a playable level
-    level14,
-    level15,
-  ];
-  return levels;
-}
+const levels: Array<() => LevelObject> = [
+  level1,
+  level2,
+  level3,
+  level4,
+  level5,
+  level6,
+  level7,
+  level8,
+  level9,
+  level10,
+  level11,
+  level12,
+  level13, // level 13 is special, it's not a playable level
+  level14,
+  level15,
+];
+
 export function initLevel(
   canvas: HTMLCanvasElement,
   camera: Camera,
   levelId = 1
 ) {
   const gameObjects: any[] = [];
-  const levels = getLevels();
+
   const level = levels[levelId - 1]();
   const player = new Balloon(canvas, level.playerPos);
   const goal = new Goal(level.goalPos);
@@ -96,7 +94,6 @@ export function initLevel(
 }
 
 export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
-  const levels = getLevels();
   const selectLevelObjects: any[] = [];
   const gap = 150;
   const buttonWidth = 75;
