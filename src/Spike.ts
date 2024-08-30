@@ -2,13 +2,11 @@ import { Vector } from "kontra";
 import { RigidBody } from "./RigidBody";
 import { getColorBasedOnGasAmount } from "./colorUtils";
 
-type SpikeOptions = {};
 export class Spike {
   rigidBody: RigidBody;
   startPos: Vector;
   isSpike = true;
-  constructor(startPos: Vector, options: SpikeOptions = {}) {
-    console.log("Spike created", options);
+  constructor(startPos: Vector) {
     this.startPos = startPos;
     const triangleVertices = [
       Vector(0, 0).add(startPos),

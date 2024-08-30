@@ -35,7 +35,6 @@ export class RigidBody {
     this.path = options.path ? Vector(options.path) : Vector(0, 0);
     this.speed = options.speed ? Vector(options.speed) : Vector(0, 0);
     this.direction = options.direction || 0;
-    console.log(this.direction);
     particlePos.forEach((pos) => {
       const p = new Particle(Vector(pos));
       p.setSpeed(this.speed.scale(this.direction));

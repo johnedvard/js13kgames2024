@@ -77,6 +77,62 @@ export function playBubble() {
     playSingleBubble();
   }, 150);
 }
+
+export function playExplode() {
+  zzfx(
+    ...[
+      1.9,
+      ,
+      346,
+      0.01,
+      0.04,
+      0.11,
+      4,
+      4.4,
+      85,
+      ,
+      ,
+      ,
+      ,
+      ,
+      367,
+      ,
+      0.32,
+      0.64,
+      0.16,
+      ,
+      -1094,
+    ]
+  ); // Random 252
+}
+
+export function playGoal() {
+  zzfx(
+    ...[
+      0.9,
+      ,
+      579,
+      0.32,
+      0.03,
+      0.05,
+      1,
+      0.8,
+      ,
+      24,
+      ,
+      ,
+      ,
+      ,
+      ,
+      ,
+      ,
+      0.84,
+      0.04,
+      ,
+      -1282,
+    ]
+  ); // Random 317
+}
 export function playSong() {
   if (myAudioNode) {
     audioContext.resume();

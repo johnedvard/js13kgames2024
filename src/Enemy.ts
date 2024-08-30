@@ -9,8 +9,6 @@ export class Enemy {
   particles: Particle[] = [];
   springs: Spring[] = [];
   constructor(startPos: Vector) {
-    console.log("Enemy created");
-
     this.center = startPos;
     this.radius = 100; // Radius of the circle
     this.numSections = 13; // Number of sections

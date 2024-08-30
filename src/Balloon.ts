@@ -5,7 +5,7 @@ import { catmullRomSpline, getCenterPoint } from "./mathUtils";
 import { isUserTouching } from "./inputController";
 import { GameEvent } from "./GameEvent";
 import { getColorBasedOnGasAmount } from "./colorUtils";
-import { playInflate } from "./audio";
+import { playExplode, playInflate } from "./audio";
 
 const MING_GAS_AMOUNT = 10000;
 
@@ -202,6 +202,7 @@ export class Balloon {
     this.state = state;
     switch (state) {
       case "dead":
+        playExplode();
         emit(GameEvent.burstBalloon, this);
         this.springs.length = 0;
         break;

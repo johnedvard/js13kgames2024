@@ -12,6 +12,7 @@ import { GameEvent } from "./GameEvent";
 
 import { BubbleButton } from "./BubbleButton";
 import { setItem } from "./storageUtils";
+import { playGoal } from "./audio";
 
 const { canvas } = init("game");
 const { canvas: transitionCanvas } = init("transition");
@@ -219,7 +220,9 @@ function handleLevelClear() {
       startLevel("level");
     }, 2000);
   }
-  if (_goal.checkIfGoalReached(_player)) {
+  if (_goal.checkIfGoalReached(_player) && !isDisplayingLevelClearScreen) {
+    console.log("play goal");
+    playGoal();
     isDisplayingLevelClearScreen = true;
     levelPersistentObjects.length = 0;
     setTimeout(() => {
@@ -231,7 +234,7 @@ function handleLevelClear() {
       mainLoop.stop();
       sceneTransition.reset();
       transitionLoop.start();
-    }, 0);
+    }, 20);
   }
 }
 

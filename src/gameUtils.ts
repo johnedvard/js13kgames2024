@@ -47,7 +47,6 @@ export function handleCollision(objects: any[]) {
           closestOtherObject?.setState("dead");
         }
         if (checkIfKillSpike(object, closestOtherObject)) {
-          console.log("Killed by spike");
           object?.setState("dead");
         }
         particle.pos = Vector(closestPointOnLine);
