@@ -69,7 +69,7 @@ if (import.meta.env.MODE !== "web3") {
     x: 0,
     y: 120,
     color: getColorBasedOnGasAmount(1000),
-    text: "Web3 enabled game",
+    text: "Web3 enabled",
     font: "32px Arial",
     anchor: { x: 0.5, y: 0.5 },
     context: canvas.getContext("2d") as CanvasRenderingContext2D,
