@@ -14,6 +14,7 @@ import { BubbleButton } from "./BubbleButton";
 import { setItem } from "./storageUtils";
 import { playGoal } from "./audio";
 import { initThirdweb } from "./thirdweb";
+import { getColorBasedOnGasAmount } from "./colorUtils";
 
 const { canvas } = init("game");
 const { canvas: transitionCanvas } = init("transition");
@@ -67,8 +68,10 @@ if (import.meta.env.MODE !== "web3") {
   const text = Text({
     x: 0,
     y: 120,
+    color: getColorBasedOnGasAmount(1000),
     text: "Web3 enabled game",
     font: "32px Arial",
+    anchor: { x: 0.5, y: 0.5 },
     context: canvas.getContext("2d") as CanvasRenderingContext2D,
   });
   mainMenuObjects.push(text);
