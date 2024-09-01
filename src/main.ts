@@ -49,18 +49,30 @@ const playBtn = new BubbleButton(
   GameEvent.selectLevel,
   {}
 );
-const web3Btn = new BubbleButton(
-  canvas,
-  0,
-  120,
-  75,
-  "Web3",
-  40,
-  GameEvent.web3,
-  {}
-);
 mainMenuObjects.push(playBtn);
-mainMenuObjects.push(web3Btn);
+
+if (import.meta.env.MODE !== "web3") {
+  const web3Btn = new BubbleButton(
+    canvas,
+    0,
+    120,
+    75,
+    "Web3",
+    40,
+    GameEvent.web3,
+    {}
+  );
+  mainMenuObjects.push(web3Btn);
+} else {
+  const text = Text({
+    x: 0,
+    y: 120,
+    text: "Web3 enabled game",
+    font: "32px Arial",
+    context: canvas.getContext("2d") as CanvasRenderingContext2D,
+  });
+  mainMenuObjects.push(text);
+}
 
 function createLevelSelect() {
   selectLevelObjects.length = 0;
