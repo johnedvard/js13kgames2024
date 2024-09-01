@@ -23,7 +23,7 @@ export default function getLevel() {
       {
         enemy: {
           pos: Vector(1000, h - 300),
-          options: { balloonType: "friend" },
+          options: { balloonType: "f" },
         },
       },
       // spike behind small box

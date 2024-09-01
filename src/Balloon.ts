@@ -9,7 +9,7 @@ import { playExplode, playInflate } from "./audio";
 
 const MING_GAS_AMOUNT = 10000;
 
-type BalloonType = "friend" | "foe" | "player";
+type BalloonType = "f" | "e" | "p"; //friend enemy player
 type BalloonOptions = {
   numParticles?: number;
   length?: number;
@@ -22,7 +22,7 @@ type BalloonOptions = {
   balloonType?: BalloonType;
 };
 export class Balloon {
-  state: "" | "dead" = "";
+  state: "" | "d" = ""; // d = dead
   springs: Spring[] = [];
   particles: Particle[] = []; // Store particles for collision detection
   volume: number = 0; // calculated volume i the balloon
@@ -30,7 +30,7 @@ export class Balloon {
   centerPoint: Vector = Vector(0, 0); // Center point of the balloon
   balloonGravity: Vector = Vector(0, 0); // calculated Gravity acting on the preassure in the balloon
   isStationairy: boolean = false;
-  balloonType: BalloonType = "player";
+  balloonType: BalloonType = "p";
   text!: Text;
   lineWidth = 10;
   hideParticles = false;
@@ -63,7 +63,7 @@ export class Balloon {
     this.gasAmount = ballonOptions?.gasAmount || 65000;
     this.lineWidth = ballonOptions?.lineWidth || 10;
     this.hideParticles = ballonOptions?.hideParticles || false;
-    this.balloonType = ballonOptions?.balloonType || "player";
+    this.balloonType = ballonOptions?.balloonType || "p";
     const numParticles = ballonOptions?.numParticles || 20;
     const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
     const length = ballonOptions?.length || 10;
@@ -141,7 +141,7 @@ export class Balloon {
   }
 
   update() {
-    if (this.state === "dead") {
+    if (this.state === "d") {
       this.ellapsedDeadTime += 1000 / 60;
       if (this.ellapsedDeadTime <= 2000) {
         this.particles.forEach((particle) => {
@@ -182,7 +182,7 @@ export class Balloon {
 
   handleGasInput() {
     if (this.isStationairy) return;
-    if (this.state === "dead") return;
+    if (this.state === "d") return;
     const gasToAdd = 500;
     if (isUserTouching()) {
       playInflate();
@@ -194,14 +194,14 @@ export class Balloon {
       this.gasAmount = MING_GAS_AMOUNT;
     }
     if (this.gasAmount > 130999) {
-      this.setState("dead");
+      this.setState("d");
     }
   }
 
-  setState(state: "" | "dead") {
+  setState(state: "" | "d") {
     this.state = state;
     switch (state) {
-      case "dead":
+      case "d":
         playExplode();
         emit(GameEvent.burstBalloon, this);
         this.springs.length = 0;
@@ -210,7 +210,7 @@ export class Balloon {
   }
 
   render(context: CanvasRenderingContext2D) {
-    if (this.state === "dead") {
+    if (this.state === "d") {
       return;
     }
     this.springs.forEach((spring) =>
@@ -228,7 +228,7 @@ export class Balloon {
   }
 
   renderEnemyText(pos: Vector) {
-    if (this.balloonType === "foe") {
+    if (this.balloonType === "e") {
       this.text.text = "XIII";
       this.text.color = getColorBasedOnGasAmount(130000);
       this.text.x = pos.x;
@@ -252,9 +252,9 @@ export class Balloon {
     // Create a spline through all the points in the particles array
     context.beginPath();
     context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
-    if (this.balloonType === "foe") {
+    if (this.balloonType === "e") {
       context.strokeStyle = getColorBasedOnGasAmount(130000);
-    } else if (this.balloonType === "friend") {
+    } else if (this.balloonType === "f") {
       context.strokeStyle = "#1c2";
     } else {
       context.strokeStyle = getColorBasedOnGasAmount(this.gasAmount);

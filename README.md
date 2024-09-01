@@ -4,4 +4,5 @@ A js13kgames 2024 entry
 
 ## Build
 
-Remember to change the /index.js to ./index.js after building
+use `npm run build:roadroller` to get the smallest possible file size
+use `node inlinejs.cjs` to inline index.js into the html file.

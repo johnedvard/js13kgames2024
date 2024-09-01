@@ -16,16 +16,16 @@ import { playGoal } from "./audio";
 import { initThirdweb } from "./thirdweb";
 import { getColorBasedOnGasAmount } from "./colorUtils";
 
-const { canvas } = init("game");
-const { canvas: transitionCanvas } = init("transition");
-const { canvas: hudCanvas } = init("hud");
+const { canvas } = init("g");
+const { canvas: transitionCanvas } = init("t");
+const { canvas: hudCanvas } = init("h");
 // These are just in-game values, not the actual canvas size
 export const GAME_HEIGHT = 1840;
 export const GAME_WIDTH = 2548;
 
-type SceneId = "menu" | "level" | "select";
-let activeScene: SceneId = "menu";
-let nextScene: SceneId = "level";
+type SceneId = "m" | "l" | "s"; // menu, level, select
+let activeScene: SceneId = "m";
+let nextScene: SceneId = "l";
 const sceneTransition = new SceneTransition(transitionCanvas);
 let _objects: any[] = [];
 let _player: Balloon;
@@ -102,7 +102,7 @@ on(GameEvent.down, () => {
 on(GameEvent.play, ({ levelId }: any) => {
   setTimeout(() => {
     currentLevelId = levelId;
-    nextScene = "level";
+    nextScene = "l";
     sceneTransition.reset();
     transitionLoop.start();
   }, 500);
@@ -114,7 +114,7 @@ on(GameEvent.web3, () => {
 
 on(GameEvent.selectLevel, () => {
   setTimeout(() => {
-    nextScene = "select";
+    nextScene = "s";
     sceneTransition.reset();
     transitionLoop.start();
   }, 500);
@@ -122,10 +122,10 @@ on(GameEvent.selectLevel, () => {
 
 const mainLoop = GameLoop({
   update: function () {
-    if (activeScene === "menu") {
+    if (activeScene === "m") {
       camera?.follow(Vector(0, 0));
       mainMenuObjects.forEach((object: any) => object.update());
-    } else if (activeScene === "select") {
+    } else if (activeScene === "s") {
       camera?.follow(currentCanvasPos);
       selectLevelObjects.forEach((object: any) => object.update());
     } else {
@@ -141,9 +141,9 @@ const mainLoop = GameLoop({
     const context = canvas.getContext("2d") as CanvasRenderingContext2D;
     camera.clear(context);
     camera.apply(context);
-    if (activeScene === "menu") {
+    if (activeScene === "m") {
       mainMenuObjects.forEach((object: any) => object.render(context));
-    } else if (activeScene === "select") {
+    } else if (activeScene === "s") {
       selectLevelObjects.forEach((object: any) => object.render(context));
     } else {
       _objects.forEach((object) => object.render(context));
@@ -163,10 +163,10 @@ const transitionLoop = GameLoop({
     sceneTransition?.update();
     if (!fadeinComplete && sceneTransition.isFadeInComplete()) {
       fadeinComplete = true;
-      if (nextScene === "select") {
-        activeScene = "select";
-      } else if (nextScene === "level") {
-        startLevel("level");
+      if (nextScene === "s") {
+        activeScene = "s";
+      } else if (nextScene === "l") {
+        startLevel("l");
         destroySelectLevelObjects();
       }
     } else if (sceneTransition.isFadeOutComplete()) {
@@ -195,7 +195,7 @@ const hudLoop = GameLoop({
   },
 });
 
-async function startLevel(scene: SceneId = "menu") {
+async function startLevel(scene: SceneId = "m") {
   activeScene = scene;
   if (!gameHasStarted) {
     listenForResize([hudCanvas, transitionCanvas, canvas], [createLevelSelect]);
@@ -234,7 +234,7 @@ async function startLevel(scene: SceneId = "menu") {
 
 function handleLevelClear() {
   if (isDisplayingLevelClearScreen || isDisplayingPlayerDiedScreen) return;
-  if (_player.state === "dead") {
+  if (_player.state === "d") {
     isDisplayingPlayerDiedScreen = true;
     _objects.push(
       Text({
@@ -249,7 +249,7 @@ function handleLevelClear() {
       _objects.length = 0;
       isDisplayingPlayerDiedScreen = false;
       mainLoop.stop();
-      startLevel("level");
+      startLevel("l");
     }, 2000);
   }
   if (_goal.checkIfGoalReached(_player) && !isDisplayingLevelClearScreen) {
@@ -270,4 +270,4 @@ function handleLevelClear() {
   }
 }
 
-startLevel("menu");
+startLevel("m");

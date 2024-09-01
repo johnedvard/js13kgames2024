@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <base href="." />
-    <meta charset="UTF-8" />
     <style>
       body {
         height: 100vh;
@@ -16,15 +14,15 @@
         width: 100%;
         height: 100%;
       }
-      #game {
-        background: linear-gradient(to bottom, #011133, #060e1a);
-      }
       body,
       canvas {
         touch-action: none;
         user-select: none;
       }
-      #transition {
+      #g {
+        background: linear-gradient(to bottom, #011133, #060e1a);
+      }
+      #t {
         pointer-events: none;
       }
     </style>
@@ -32,13 +30,11 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>js13kgames2024</title>
   </head>
   <body>
-    <canvas id="hud" onContextMenu="return false"></canvas>
-    <canvas id="game" onContextMenu="return false"></canvas>
-    <canvas id="transition" onContextMenu="return false"></canvas>
+    <canvas id="h" onContextMenu="return false"></canvas>
+    <canvas id="g" onContextMenu="return false"></canvas>
+    <canvas id="t" onContextMenu="return false"></canvas>
     <script type="module" src="./src/main.ts"></script>
-    <div id="chik"></div>
   </body>
 </html>

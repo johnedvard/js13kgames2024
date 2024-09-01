@@ -43,11 +43,11 @@ export function handleCollision(objects: any[]) {
       if (intersections % 2 === 1 && closestPointOnLine) {
         // Particle is inside another object
         if (checkIfKillBalloons(object, closestOtherObject)) {
-          object?.setState("dead");
-          closestOtherObject?.setState("dead");
+          object?.setState("d");
+          closestOtherObject?.setState("d");
         }
         if (checkIfKillSpike(object, closestOtherObject)) {
-          object?.setState("dead");
+          object?.setState("d");
         }
         particle.pos = Vector(closestPointOnLine);
         particle.velocity = particle.velocity.scale(-1); // adjust the velocity to simulate a bounce
@@ -61,12 +61,12 @@ function checkIfKillBalloons(a: any, b: any) {
     a !== b &&
     a?.isBalloon &&
     b?.isBalloon &&
-    a?.state !== "dead" &&
-    b?.state !== "dead" &&
-    (a?.balloonType === "foe" || b?.balloonType === "foe")
+    a?.state !== "d" &&
+    b?.state !== "d" &&
+    (a?.balloonType === "e" || b?.balloonType === "e")
   );
 }
 
 function checkIfKillSpike(a: any, b: any): a is Balloon {
-  return a !== b && a?.isBalloon && b?.isSpike && a?.state !== "dead";
+  return a !== b && a?.isBalloon && b?.isSpike && a?.state !== "d";
 }

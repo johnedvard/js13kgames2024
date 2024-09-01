@@ -14,8 +14,8 @@ export default function getLevel() {
           text: "Some bubbles are friendly",
         },
       },
-      { enemy: { pos: Vector(500, -20), options: { balloonType: "friend" } } },
-      { enemy: { pos: Vector(860, -50), options: { balloonType: "friend" } } },
+      { enemy: { pos: Vector(500, -20), options: { balloonType: "f" } } },
+      { enemy: { pos: Vector(860, -50), options: { balloonType: "f" } } },
     ],
   };
 }

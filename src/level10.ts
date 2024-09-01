@@ -10,8 +10,8 @@ export default function getLevel() {
       { box: { pos: Vector(-500, 160), width: 2000, height: 200 } },
       // right wall
       { box: { pos: Vector(1500, -1000), width: 200, height: 2800 } },
-      { enemy: { pos: Vector(1200, -20), options: { balloonType: "foe" } } },
-      { enemy: { pos: Vector(860, -50), options: { balloonType: "friend" } } },
+      { enemy: { pos: Vector(1200, -20), options: { balloonType: "e" } } },
+      { enemy: { pos: Vector(860, -50), options: { balloonType: "f" } } },
       {
         text: {
           pos: Vector(200, 200),

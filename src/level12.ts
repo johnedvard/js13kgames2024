@@ -12,19 +12,19 @@ export default function getLevel() {
       {
         enemy: {
           pos: Vector(200 + boxHeight, h - boxHeight),
-          options: { balloonType: "friend" },
+          options: { balloonType: "f" },
         },
       },
       {
         enemy: {
           pos: Vector(w / 2 + 750, h - 50),
-          options: { balloonType: "foe" },
+          options: { balloonType: "e" },
         },
       },
       {
         enemy: {
           pos: Vector(200 + boxHeight * 4, h - boxHeight * 4),
-          options: { balloonType: "foe" },
+          options: { balloonType: "e" },
         },
       },
       // first stair case
