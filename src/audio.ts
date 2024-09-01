@@ -134,6 +134,7 @@ export function playGoal() {
   ); // Random 317
 }
 export function playSong() {
+  if (import.meta.env.MODE === "web3") return;
   if (myAudioNode) {
     audioContext.resume();
     return;

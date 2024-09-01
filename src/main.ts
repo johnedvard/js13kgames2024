@@ -4,7 +4,7 @@ import { Balloon } from "./Balloon";
 import { initializeInputController } from "./inputController";
 import { Camera } from "./Camera";
 import { createLevelSelectObjects, initLevel } from "./levelUtils";
-import { listenForResize } from "./domUtils";
+import { embedWeb3Version, listenForResize } from "./domUtils";
 import { handleCollision } from "./gameUtils";
 import { Goal } from "./Goal";
 import { SceneTransition } from "./SceneTransition";
@@ -13,6 +13,7 @@ import { GameEvent } from "./GameEvent";
 import { BubbleButton } from "./BubbleButton";
 import { setItem } from "./storageUtils";
 import { playGoal } from "./audio";
+import { initThirdweb } from "./thirdweb";
 
 const { canvas } = init("game");
 const { canvas: transitionCanvas } = init("transition");
@@ -48,8 +49,18 @@ const playBtn = new BubbleButton(
   GameEvent.selectLevel,
   {}
 );
-// const web3Btn = new BubbleButton(canvas, 0, 120, 75, "Web3", GameEvent.web3);
+const web3Btn = new BubbleButton(
+  canvas,
+  0,
+  120,
+  75,
+  "Web3",
+  40,
+  GameEvent.web3,
+  {}
+);
 mainMenuObjects.push(playBtn);
+mainMenuObjects.push(web3Btn);
 
 function createLevelSelect() {
   selectLevelObjects.length = 0;
@@ -80,6 +91,10 @@ on(GameEvent.play, ({ levelId }: any) => {
     sceneTransition.reset();
     transitionLoop.start();
   }, 500);
+});
+
+on(GameEvent.web3, () => {
+  embedWeb3Version();
 });
 
 on(GameEvent.selectLevel, () => {
@@ -197,7 +212,9 @@ async function startLevel(scene: SceneId = "menu") {
 
   gameHasStarted = true;
   mainLoop.start(); // start the game
-  // initThirdweb();
+  if (import.meta.env.MODE === "web3") {
+    initThirdweb();
+  }
 }
 
 function handleLevelClear() {

@@ -1,5 +1,5 @@
 let resizeTimeout: number | undefined;
-
+let isEmbedding = false;
 let gameCanvases: HTMLCanvasElement[];
 
 function scaleCanvas() {
@@ -39,4 +39,22 @@ export function listenForResize(
   window.addEventListener("resize", debouncedResize);
   scaleCanvas();
   callbackFunctions?.forEach((callback) => callback());
+}
+
+export function embedWeb3Version() {
+  if (isEmbedding) return;
+  isEmbedding = true;
+  const iframe = document.createElement("iframe");
+  iframe.src = "https://js13kgames2024.netlify.app/";
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  iframe.style.border = "none";
+
+  // Remove all other canvas elements on the page
+  const canvasElements = document.querySelectorAll("canvas");
+  canvasElements.forEach((canvas: HTMLCanvasElement) => {
+    canvas.remove();
+  });
+
+  document.body.appendChild(iframe);
 }

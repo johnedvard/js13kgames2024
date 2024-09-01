@@ -1,11 +1,10 @@
 export enum GameEvent {
-  burstBalloon = "bb",
+  burstBalloon = "b",
   up = "u",
-  down = "do",
+  down = "d",
   play = "p",
-  web3 = "w3",
-  selectLevel = "sl",
-  scroll = "s",
+  web3 = "w",
+  selectLevel = "l",
   drag = "dr",
   kill = "k",
 }
