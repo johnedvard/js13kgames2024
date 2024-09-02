@@ -15,5 +15,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [ViteMinifyPlugin({})],
+  plugins: [ViteMinifyPlugin({removeAttributeQuotes: true})],
 });
