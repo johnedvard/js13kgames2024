@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:web3": "vite --mode=web3",
     "build": "tsc && vite build",
     "build:web3": "tsc && vite build --mode=web3",
     "build:roadroller": "npm run build && npx roadroller dist/index.js -o dist/index.js",

@@ -69,7 +69,7 @@ if (import.meta.env.MODE !== "web3") {
     x: 0,
     y: 120,
     color: getColorBasedOnGasAmount(1000),
-    text: "Web3 enabled",
+    text: "Web3 enabled. Fetching random NPCs",
     font: "32px Arial",
     anchor: { x: 0.5, y: 0.5 },
     context: canvas.getContext("2d") as CanvasRenderingContext2D,
@@ -227,9 +227,10 @@ async function startLevel(scene: SceneId = "m") {
 
   gameHasStarted = true;
   mainLoop.start(); // start the game
-  if (import.meta.env.MODE === "web3") {
-    initThirdweb();
-  }
+}
+if (import.meta.env.MODE === "web3") {
+  console.log("init thirdweb");
+  initThirdweb();
 }
 
 function handleLevelClear() {
