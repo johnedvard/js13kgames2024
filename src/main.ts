@@ -37,7 +37,6 @@ let isDisplayingLevelClearScreen = false;
 let isDisplayingPlayerDiedScreen = false;
 const levelPersistentObjects: any[] = [];
 let fadeinComplete = false; // used to control the fadein out transtiion
-let renderBg = false;
 
 const mainMenuObjects: any = [];
 const selectLevelObjects: any = [];
@@ -101,7 +100,6 @@ on(GameEvent.down, () => {
 });
 
 on(GameEvent.play, ({ levelId }: any) => {
-  renderBg = true;
   setTimeout(() => {
     currentLevelId = levelId;
     nextScene = "l";

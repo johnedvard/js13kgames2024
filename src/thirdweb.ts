@@ -5,10 +5,8 @@ import { setDefaultStartColor } from "./colorUtils";
 import { on } from "kontra";
 import { GameEvent } from "./GameEvent";
 
-let loadingNpcs = false;
 let levelSelected = false;
 export async function initThirdweb() {
-  loadingNpcs = true;
   levelSelected = false;
   on(GameEvent.selectLevel, () => {
     levelSelected = true;
@@ -75,7 +73,6 @@ export async function initThirdweb() {
     start: Math.floor(Math.random() * 11000),
     count: 3,
   });
-  loadingNpcs = false;
   if (levelSelected) return;
   document.body.appendChild(chikinMsgEl);
   divEl.appendChild(spinner);
