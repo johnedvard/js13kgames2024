@@ -18,7 +18,7 @@ import { getColorBasedOnGasAmount } from "./colorUtils";
 
 const { canvas } = init("g");
 const { canvas: transitionCanvas } = init("t");
-const { canvas: hudCanvas } = init("h");
+const { canvas: backgroundCanvas } = init("b");
 // These are just in-game values, not the actual canvas size
 export const GAME_HEIGHT = 1840;
 export const GAME_WIDTH = 2548;
@@ -37,6 +37,7 @@ let isDisplayingLevelClearScreen = false;
 let isDisplayingPlayerDiedScreen = false;
 const levelPersistentObjects: any[] = [];
 let fadeinComplete = false; // used to control the fadein out transtiion
+let renderBg = false;
 
 const mainMenuObjects: any = [];
 const selectLevelObjects: any = [];
@@ -100,6 +101,7 @@ on(GameEvent.down, () => {
 });
 
 on(GameEvent.play, ({ levelId }: any) => {
+  renderBg = true;
   setTimeout(() => {
     currentLevelId = levelId;
     nextScene = "l";
@@ -129,6 +131,7 @@ const mainLoop = GameLoop({
       camera?.follow(currentCanvasPos);
       selectLevelObjects.forEach((object: any) => object.update());
     } else {
+      updateBackgroundCanvas();
       _objects.forEach((object) => object.update());
       levelPersistentObjects.forEach((object) => object.update());
       camera?.follow(_player?.centerPoint.add(Vector(200, -100)));
@@ -139,6 +142,7 @@ const mainLoop = GameLoop({
   },
   render: function () {
     const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+
     camera.clear(context);
     camera.apply(context);
     if (activeScene === "m") {
@@ -146,12 +150,18 @@ const mainLoop = GameLoop({
     } else if (activeScene === "s") {
       selectLevelObjects.forEach((object: any) => object.render(context));
     } else {
+      renderBackgroundCanvas(camera);
       _objects.forEach((object) => object.render(context));
       levelPersistentObjects.forEach((object) => object.render(context));
     }
   },
 });
 
+function updateBackgroundCanvas() {}
+function renderBackgroundCanvas(camera: Camera) {
+  const context = backgroundCanvas.getContext("2d") as CanvasRenderingContext2D;
+  drawWaves(backgroundCanvas, context, camera);
+}
 function destroySelectLevelObjects() {
   selectLevelObjects.forEach((object: any) => {
     if (object?.destroy) object.destroy();
@@ -183,24 +193,55 @@ const transitionLoop = GameLoop({
   },
 });
 
-const hudObjects: any[] = [];
+let bgExcessWidth = 2000;
+// Function to draw random waves that look like hills
+function drawWaves(
+  bgCanvas: HTMLCanvasElement,
+  context: CanvasRenderingContext2D,
+  camera: Camera
+) {
+  const height = 600;
+  context.save();
+  context.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+  context.translate(camera.pos.x / -5, camera.pos.y / -4); // Apply camera translation parallax effect
+  const { width: canvasWidth, height: canvasHeight } = bgCanvas;
+  // Create gradient
+  const gradient = context.createLinearGradient(
+    0,
+    canvasHeight - 200,
+    0,
+    canvasHeight
+  );
+  gradient.addColorStop(0, "#01011388");
+  gradient.addColorStop(1, "#060e1a88");
 
-const hudLoop = GameLoop({
-  update: function () {
-    hudObjects.forEach((object: any) => object.update());
-  },
-  render: function () {
-    const context = hudCanvas.getContext("2d") as CanvasRenderingContext2D;
-    hudObjects.forEach((object: any) => object.render(context));
-  },
-});
+  context.fillStyle = gradient;
+  context.beginPath();
+  context.moveTo(-bgExcessWidth, height);
+  context.fillRect(
+    -bgExcessWidth,
+    height,
+    canvasWidth + bgExcessWidth * 2,
+    canvasHeight
+  );
+  for (let i = -bgExcessWidth; i <= canvasWidth + bgExcessWidth; i += 50) {
+    // const waveHeight = Math.sin(i * 0.03) * 50 + 150;
+    const waveHeight = Math.sin(i * 0.03) * 50 + 150;
+    context.lineTo(i, height - waveHeight);
+  }
+  context.lineTo(canvasWidth + bgExcessWidth, height);
+  context.closePath();
+  context.fill();
+  context.restore();
+}
 
 async function startLevel(scene: SceneId = "m") {
   activeScene = scene;
   if (!gameHasStarted) {
-    listenForResize([hudCanvas, transitionCanvas, canvas], [createLevelSelect]);
-
-    hudLoop.start();
+    listenForResize(
+      [backgroundCanvas, transitionCanvas, canvas],
+      [createLevelSelect]
+    );
     initializeInputController(canvas);
     camera = new Camera(canvas);
   }
@@ -212,20 +253,12 @@ async function startLevel(scene: SceneId = "m") {
   _player = player;
   _goal = goal;
   _objects = gameObjects;
-  // _objects.push(new Enemy(Vector(0, -200)));
-  // _objects.push(
-  //   new Balloon(canvas, Vector(200, -200), {
-  //     isStationairy: true,
-  //     lineWidth: 3,
-  //     hideText: true,
-  //     hideParticles: true,
-  //   })
-  // );
   _objects.splice(0, 0, _player);
   _objects.splice(0, 0, goal);
   // todo cleanup existing objects
 
   gameHasStarted = true;
+  console.log("start main loop");
   mainLoop.start(); // start the game
 }
 if (import.meta.env.MODE === "web3") {

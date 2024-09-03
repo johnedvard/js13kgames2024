@@ -5,8 +5,13 @@ import { setDefaultStartColor } from "./colorUtils";
 import { on } from "kontra";
 import { GameEvent } from "./GameEvent";
 
+let loadingNpcs = false;
+let levelSelected = false;
 export async function initThirdweb() {
+  loadingNpcs = true;
+  levelSelected = false;
   on(GameEvent.selectLevel, () => {
+    levelSelected = true;
     document.getElementById("thirdweb")?.remove();
     document.getElementById("chikin-msg")?.remove();
     console.log("remove all chikins");
@@ -32,7 +37,6 @@ export async function initThirdweb() {
   chikinMsgEl.style.justifyContent = "center";
   chikinMsgEl.style.color = "white";
   chikinMsgEl.innerHTML = "";
-  document.body.appendChild(chikinMsgEl);
 
   const divEl = document.createElement("div");
   divEl.id = "thirdweb";
@@ -66,14 +70,17 @@ export async function initThirdweb() {
     styleSheet.cssRules.length
   );
 
-  divEl.appendChild(spinner);
-  document.body.appendChild(divEl);
-
   const chikns: NFT[] = await getNFTs({
     contract,
     start: Math.floor(Math.random() * 11000),
     count: 3,
   });
+  loadingNpcs = false;
+  if (levelSelected) return;
+  document.body.appendChild(chikinMsgEl);
+  divEl.appendChild(spinner);
+  document.body.appendChild(divEl);
+
   const chikinImgEls: HTMLImageElement[] = [];
 
   divEl.removeChild(spinner);

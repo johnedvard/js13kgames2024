@@ -38,11 +38,13 @@ export class SceneTransition {
     const { width, height } = this.canvas;
 
     // Clear the canvas
+    context.save();
     context.clearRect(0, 0, width, height);
 
     // Draw the black box
     context.fillStyle = "black";
     context.fillRect(0, this.pos.y, width, height);
+    context.restore();
   }
 
   isFadeInComplete() {

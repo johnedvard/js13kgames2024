@@ -19,22 +19,23 @@
         touch-action: none;
         user-select: none;
       }
-      #g {
+      #b {
         background: linear-gradient(to bottom, #011133, #060e1a);
       }
-      #t {
+      #t,
+      #b {
         pointer-events: none;
       }
     </style>
     <meta
-      name=viewport
+      name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
   </head>
   <body onContextMenu="return false" ondragstart="return false">
-    <canvas id=h></canvas>
-    <canvas id=g></canvas>
-    <canvas id=t></canvas>
-    <script type=module src="./src/main.ts"></script>
+    <canvas id="b"></canvas>
+    <canvas id="g"></canvas>
+    <canvas id="t"></canvas>
+    <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

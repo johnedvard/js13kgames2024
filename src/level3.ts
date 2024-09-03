@@ -11,6 +11,7 @@ export default function getLevel() {
       // larger box bottom
       { box: { pos: Vector(1900, h - 350), width: 350, height: 350 } },
       { text: { pos: Vector(710, h - 50), text: "Hold to go ⇧" } },
+      { text: { pos: Vector(980, h + 25), text: "Goal ⇨" } },
       // box on left, small
       {
         box: {
