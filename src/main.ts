@@ -159,7 +159,7 @@ function updateBackgroundCanvas() {}
 function renderBackgroundCanvas(camera: Camera) {
   const context = backgroundCanvas.getContext("2d") as CanvasRenderingContext2D;
   drawWaves(backgroundCanvas, context, camera);
-  drawWaves(backgroundCanvas, context, camera, { type: "hill" });
+  drawWaves(backgroundCanvas, context, camera, { type: "h" });
 }
 function destroySelectLevelObjects() {
   selectLevelObjects.forEach((object: any) => {
