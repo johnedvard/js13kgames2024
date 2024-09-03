@@ -102,7 +102,10 @@ export async function initThirdweb() {
         chikinImgEl.style.border = "none";
       }
       imgEl.style.border = "2px solid white";
-      chikinMsgEl.innerHTML = chikn.metadata?.name as string;
+      chikinMsgEl.innerHTML = `I, ${
+        chikn.metadata?.name as string
+      }, gives you the power of color!`;
+
       setDefaultStartColor(
         JSON.parse(imgEl.getAttribute("random-color") as string)
       );
