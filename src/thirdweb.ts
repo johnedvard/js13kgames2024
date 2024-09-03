@@ -27,7 +27,7 @@ export async function initThirdweb() {
   const chikinMsgEl = document.createElement("div");
   chikinMsgEl.id = "chikin-msg";
   chikinMsgEl.style.position = "absolute";
-  chikinMsgEl.style.bottom = "31vh";
+  chikinMsgEl.style.bottom = "11vh";
   chikinMsgEl.style.zIndex = "99";
   chikinMsgEl.style.width = "100vw";
   chikinMsgEl.style.display = "flex";
