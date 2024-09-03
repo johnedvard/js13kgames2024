@@ -159,6 +159,7 @@ function updateBackgroundCanvas() {}
 function renderBackgroundCanvas(camera: Camera) {
   const context = backgroundCanvas.getContext("2d") as CanvasRenderingContext2D;
   drawWaves(backgroundCanvas, context, camera);
+  drawWaves(backgroundCanvas, context, camera, { type: "hill" });
 }
 function destroySelectLevelObjects() {
   selectLevelObjects.forEach((object: any) => {
@@ -191,17 +192,20 @@ const transitionLoop = GameLoop({
   },
 });
 
+type WaveOptions = {
+  type: "h" | "";
+};
+
 let bgExcessWidth = 2000;
 // Function to draw random waves that look like hills
 function drawWaves(
   bgCanvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
-  camera: Camera
+  camera: Camera,
+  options?: WaveOptions
 ) {
   const height = 600;
   context.save();
-  context.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
-  context.translate(camera.pos.x / -5, camera.pos.y / -4); // Apply camera translation parallax effect
   const { width: canvasWidth, height: canvasHeight } = bgCanvas;
   // Create gradient
   const gradient = context.createLinearGradient(
@@ -210,21 +214,33 @@ function drawWaves(
     0,
     canvasHeight
   );
-  gradient.addColorStop(0, "#01011388");
-  gradient.addColorStop(1, "#060e1a88");
+  context.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+  if (options?.type === "h") {
+    gradient.addColorStop(0, "#010113");
+    gradient.addColorStop(1, "#060e1a");
+    context.translate(camera.pos.x / -5, camera.pos.y / -4); // Apply camera translation parallax effect
+  } else {
+    gradient.addColorStop(0, "#212133aa");
+    gradient.addColorStop(1, "#060e1a88");
+    context.translate(camera.pos.x / -40, camera.pos.y / -5); // Apply camera translation parallax effect
+  }
 
   context.fillStyle = gradient;
   context.beginPath();
   context.moveTo(-bgExcessWidth, height);
   context.fillRect(
     -bgExcessWidth,
-    height,
+    height - 20,
     canvasWidth + bgExcessWidth * 2,
     canvasHeight
   );
   for (let i = -bgExcessWidth; i <= canvasWidth + bgExcessWidth; i += 50) {
-    // const waveHeight = Math.sin(i * 0.03) * 50 + 150;
-    const waveHeight = Math.sin(i * 0.03) * 50 + 150;
+    let waveHeight = 0;
+    if (options?.type === "h") {
+      waveHeight = Math.sin(i * 0.02) * 20 + 150;
+    } else {
+      waveHeight = Math.sin(i * 0.01) * 20 + 260;
+    }
     context.lineTo(i, height - waveHeight);
   }
   context.lineTo(canvasWidth + bgExcessWidth, height);
