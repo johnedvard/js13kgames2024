@@ -6,7 +6,19 @@ import { ViteMinifyPlugin } from "vite-plugin-minify";
 export default defineConfig({
   base: "./",
   build: {
+    minify: "terser",
+    cssMinify: true,
     assetsDir: "",
+    terserOptions: {
+      toplevel: true,
+      keep_classnames: false,
+      compress: {
+        drop_console: true,
+      },
+    },
+    modulePreload: {
+      polyfill: false,
+    },
     rollupOptions: {
       output: {
         // Define output pattern for entry files (main JavaScript files)
@@ -15,5 +27,20 @@ export default defineConfig({
       },
     },
   },
-  plugins: [ViteMinifyPlugin({removeAttributeQuotes: true})],
+  // plugins: [
+  //   ViteMinifyPlugin({
+  //     removeAttributeQuotes: true,
+  //     minifyJS: true,
+  //     // minifyCSS: true,
+  //     // removeComments: true,
+  //     sortAttributes: true,
+  //     useShortDoctype: true,
+  //     sortClassName: true,
+  //     removeScriptTypeAttributes: true,
+  //     removeRedundantAttributes: true,
+  //     // removeOptionalTags: false,
+  //     // removeEmptyElements: true,
+  //     // removeEmptyAttributes: true,
+  //   }),
+  // ],
 });

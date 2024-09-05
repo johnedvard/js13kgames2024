@@ -13,6 +13,7 @@ export function playSingleBubble() {
     ...[, 1, 7, 0.02, 0.01, 0.02, 4, 0.5, , , 1, 0.01, , , 150, , 0.21, , 0.01]
   );
 }
+
 export function playInflate() {
   if (timeSinceLastPlayInflate + 150 > Date.now()) return;
   timeSinceLastPlayInflate = Date.now();
@@ -42,6 +43,7 @@ export function playInflate() {
     ]
   ); // Random 211
 }
+
 export function playthap() {
   zzfx(
     ...[
@@ -69,6 +71,7 @@ export function playthap() {
     ]
   ); // Random 130
 }
+
 export function playBubble() {
   let playedTimes = 0;
   const timeout = setInterval(() => {
@@ -133,16 +136,14 @@ export function playGoal() {
     ]
   ); // Random 317
 }
+
 export function playSong() {
-  if (import.meta.env.MODE === "web3") return;
   if (myAudioNode) {
     audioContext.resume();
     return;
   }
   let mySongData = zzfxM(...song);
   myAudioNode = zzfxP(zzfxX, ...mySongData);
-  myAudioNode.loop = true;
-
   myAudioNode.loop = true;
 }
 // Need to manually add 220 as frequency (maybe becaue it's te default)
@@ -905,3 +906,10 @@ const song = [
     patterns: ["Pattern 0", "Pattern 1", "Pattern 2", "Pattern 3"],
   },
 ];
+// export function playSong() {}
+// export function playGoal() {}
+// export function playExplode() {}
+// export function playBubble() {}
+// export function playthap() {}
+// export function playInflate() {}
+// export function playSingleBubble() {}

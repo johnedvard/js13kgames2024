@@ -19,7 +19,6 @@
     "vite-plugin-minify": "^2.0.0"
   },
   "dependencies": {
-    "kontra": "^10.0.0",
-    "thirdweb": "^5.46.0"
+    "kontra": "^10.0.0"
   }
 }

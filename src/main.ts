@@ -1,10 +1,9 @@
 import { init, GameLoop, Vector, Text, on } from "kontra";
-// import { initThirdweb } from "./thirdweb";
 import { Balloon } from "./Balloon";
 import { initializeInputController } from "./inputController";
 import { Camera } from "./Camera";
 import { createLevelSelectObjects, initLevel } from "./levelUtils";
-import { embedWeb3Version, listenForResize } from "./domUtils";
+import { listenForResize } from "./domUtils";
 import { handleCollision } from "./gameUtils";
 import { Goal } from "./Goal";
 import { SceneTransition } from "./SceneTransition";
@@ -13,14 +12,13 @@ import { GameEvent } from "./GameEvent";
 import { BubbleButton } from "./BubbleButton";
 import { setItem } from "./storageUtils";
 import { playGoal } from "./audio";
-import { initThirdweb } from "./thirdweb";
 import { getColorBasedOnGasAmount } from "./colorUtils";
+import { initThirdweb } from "./thirdweb";
 
 const { canvas } = init("g");
 const { canvas: transitionCanvas } = init("t");
 const { canvas: backgroundCanvas } = init("b");
 // These are just in-game values, not the actual canvas size
-export const GAME_HEIGHT = 1840;
 export const GAME_WIDTH = 2548;
 
 type SceneId = "m" | "l" | "s"; // menu, level, select
@@ -52,30 +50,17 @@ const playBtn = new BubbleButton(
 );
 mainMenuObjects.push(playBtn);
 
-if (import.meta.env.MODE !== "web3") {
-  const web3Btn = new BubbleButton(
-    canvas,
-    0,
-    120,
-    75,
-    "Web3",
-    40,
-    GameEvent.web3,
-    {}
-  );
-  mainMenuObjects.push(web3Btn);
-} else {
-  const text = Text({
-    x: 0,
-    y: 120,
-    color: getColorBasedOnGasAmount(1000),
-    text: "Web3 enabled. Fetching random NPCs",
-    font: "32px Arial",
-    anchor: { x: 0.5, y: 0.5 },
-    context: canvas.getContext("2d") as CanvasRenderingContext2D,
-  });
-  mainMenuObjects.push(text);
-}
+const web3Btn = new BubbleButton(
+  canvas,
+  0,
+  120,
+  75,
+  "Web3",
+  40,
+  GameEvent.web3,
+  {}
+);
+mainMenuObjects.push(web3Btn);
 
 function createLevelSelect() {
   selectLevelObjects.length = 0;
@@ -109,7 +94,17 @@ on(GameEvent.play, ({ levelId }: any) => {
 });
 
 on(GameEvent.web3, () => {
-  embedWeb3Version();
+  initThirdweb();
+  const text = Text({
+    x: 0,
+    y: 120,
+    color: getColorBasedOnGasAmount(1000),
+    text: "Web3 enabled. Fetching random NPCs",
+    font: "32px Arial",
+    anchor: { x: 0.5, y: 0.5 },
+    context: canvas.getContext("2d") as CanvasRenderingContext2D,
+  });
+  mainMenuObjects.push(text);
 });
 
 on(GameEvent.selectLevel, () => {
@@ -259,6 +254,7 @@ async function startLevel(scene: SceneId = "m") {
     initializeInputController(canvas);
     camera = new Camera(canvas);
   }
+
   const { player, goal, gameObjects } = initLevel(
     canvas,
     camera,
@@ -274,10 +270,6 @@ async function startLevel(scene: SceneId = "m") {
   gameHasStarted = true;
   console.log("start main loop");
   mainLoop.start(); // start the game
-}
-if (import.meta.env.MODE === "web3") {
-  console.log("init thirdweb");
-  initThirdweb();
 }
 
 function handleLevelClear() {
