@@ -9,15 +9,16 @@ import level3 from "./level3";
 import level4 from "./level4";
 import level5 from "./level5";
 import level6 from "./level6";
-import level7 from "./level7";
-import level8 from "./level8";
-import level9 from "./level9";
-import level10 from "./level10";
+import level9 from "./level7";
+import level10 from "./level8";
+import level7 from "./level9";
+import level8 from "./level10";
 import level11 from "./level11";
 import level12 from "./level12";
 import level13 from "./level13";
 import level14 from "./level14";
 import level15 from "./level15";
+import finalLevel from "./levelLast";
 import { Goal } from "./Goal";
 import { getItem } from "./storageUtils";
 import { BubbleButton } from "./BubbleButton";
@@ -42,7 +43,13 @@ const levels: Array<() => LevelObject> = [
   level13, // level 13 is special, it's not a playable level
   level14,
   level15,
+  finalLevel,
+  finalLevel, // adjust the final level to be the last one
 ];
+
+export function numLevels() {
+  return levels.length;
+}
 
 export function initLevel(
   canvas: HTMLCanvasElement,
@@ -99,7 +106,7 @@ export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
   const buttonWidth = 75;
   const startPosX = -400;
   const startPosY = -400;
-  for (let col = 1; col <= levels.length / 2; col++) {
+  for (let col = 1; col <= (levels.length - 2) / 2; col++) {
     for (let row = 1; row <= 2; row++) {
       const x = startPosX + col * (buttonWidth + gap);
       const y = startPosY + row * (buttonWidth + gap);

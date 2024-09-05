@@ -1,12 +1,13 @@
 import { Vector } from "kontra";
-import { GAME_HEIGHT } from "./main";
 
+const GAME_HEIGHT = 500;
 export default function getLevel() {
   return {
     playerPos: Vector(150, GAME_HEIGHT - 220),
     goalPos: Vector(4500 + 150, GAME_HEIGHT + 320),
     objects: [
       // first ramp
+      { text: { pos: Vector(400, GAME_HEIGHT + 25), text: "⇨" } },
       {
         box: {
           pos: Vector(-100, GAME_HEIGHT),
@@ -14,6 +15,7 @@ export default function getLevel() {
           height: 100,
         },
       },
+      { text: { pos: Vector(1200, GAME_HEIGHT + 25), text: "Falling is OK" } },
       // second ramp
       {
         box: {
@@ -21,6 +23,9 @@ export default function getLevel() {
           width: 1500,
           height: 100,
         },
+      },
+      {
+        text: { pos: Vector(2700, GAME_HEIGHT + 225), text: "Don't be afraid" },
       },
       // third ramp
       {
