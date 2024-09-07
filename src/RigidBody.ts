@@ -101,6 +101,7 @@ export class RigidBody {
     this.centerPoint = getCenterPoint(this.particles);
   }
   render(context: CanvasRenderingContext2D) {
+    this.renderPath(context);
     this.particles.forEach((particle) => {
       particle.render(context);
     });
@@ -109,7 +110,6 @@ export class RigidBody {
     });
 
     this.renderRigidBody(context);
-    this.renderPath(context);
   }
   renderRigidBody(context: CanvasRenderingContext2D) {
     if (!this.particles.length) return;

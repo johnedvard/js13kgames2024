@@ -9,7 +9,7 @@ function createWrapper() {
   const divEl = document.createElement("div");
   divEl.id = "w";
   divEl.style.position = "absolute";
-  divEl.style.bottom = "20vh";
+  divEl.style.bottom = "13vh";
   divEl.style.zIndex = "99";
   divEl.style.height = "0";
   divEl.style.width = "100vw";
@@ -107,7 +107,7 @@ async function createChikinImages(
   const chikinMsgEl = document.createElement("div");
   chikinMsgEl.id = "c";
   chikinMsgEl.style.position = "absolute";
-  chikinMsgEl.style.bottom = "11vh";
+  chikinMsgEl.style.bottom = "10vh";
   chikinMsgEl.style.zIndex = "9";
   chikinMsgEl.style.width = "100vw";
   chikinMsgEl.style.display = "flex";
