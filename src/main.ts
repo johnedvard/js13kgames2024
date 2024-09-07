@@ -127,9 +127,10 @@ on(GameEvent.web3, () => {
     x: 0,
     y: -250,
     color: getColorBasedOnGasAmount(1000),
-    text: "Web3 enabled. Fetching random NPCs",
+    text: "Web3 enabled\nFetching NPCs and bonus levels",
     font: "32px Arial",
     anchor: { x: 0.5, y: 0.5 },
+    textAlign: "center",
     context: canvas.getContext("2d") as CanvasRenderingContext2D,
   });
   mainMenuObjects.push(text);
@@ -209,11 +210,15 @@ const transitionLoop = GameLoop({
       fadeinComplete = true;
       if (nextScene === "s") {
         activeScene = "s";
-        mainMenuObjects.forEach((object: any) => object?.destroy());
+        mainMenuObjects.forEach((object: any) => {
+          object && object.destroy && object.destroy();
+        });
         mainMenuObjects.length = 0;
       } else if (nextScene === "b") {
         activeScene = "b";
-        mainMenuObjects.forEach((object: any) => object?.destroy());
+        mainMenuObjects.forEach((object: any) => {
+          object && object.destroy && object.destroy();
+        });
         mainMenuObjects.length = 0;
       } else if (nextScene === "l") {
         startLevel("l");
@@ -315,7 +320,6 @@ async function startLevel(scene: SceneId = "m") {
   // todo cleanup existing objects
 
   gameHasStarted = true;
-  console.log("start main loop");
   mainLoop.start(); // start the game
 }
 

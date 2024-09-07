@@ -54,33 +54,7 @@ export async function initThirdweb() {
   const wrapperEl = createWrapper();
   const spinner = createSpinner(wrapperEl);
 
-  const ThirdWebProm = import(
-    // @ts-ignore
-    /* @vite-ignore */ new URL("https://esm.sh/thirdweb@5.50.0")
-  );
-
-  const chainsProm = import(
-    // @ts-ignore
-    /* @vite-ignore */ new URL("https://esm.sh/thirdweb@5.50.0/chains")
-  );
-  const erc721Prom = import(
-    // @ts-ignore
-    /* @vite-ignore */ new URL(
-      "https://esm.sh/thirdweb@5.50.0/extensions/erc721"
-    )
-  );
-
-  const storageProm = import(
-    // @ts-ignore
-    /* @vite-ignore */ new URL("https://esm.sh/thirdweb@5.50.0/storage")
-  );
-
-  const [ThirdWeb, chains, erc721, storage] = await Promise.all([
-    ThirdWebProm,
-    chainsProm,
-    erc721Prom,
-    storageProm,
-  ]);
+  const [ThirdWeb, chains, erc721, storage] = await importThirdwebSDK();
 
   wrapperEl.removeChild(spinner);
   if (levelSelected) return;
@@ -90,38 +64,46 @@ export async function initThirdweb() {
     clientId: "1208e5a68330be8540c30917e7065d4d",
   });
 
-  const file1 = await storage.download({
-    client,
-    uri: "ipfs://QmaGn65fZnKw25fqYGNqpzpjsXmnLGUdRPs5cvFEkquNnQ",
-  });
-  const file2 = await storage.download({
-    client,
-    uri: "ipfs://QmPHsFPjchGU2J66gS9G5uQuPaCPmc8Rx6yzFWTYtyozFB",
-  });
-
-  // Fetch and read JSON file
-  const bonus1Prom = fetch(file1.url);
-  const bonus2Prom = fetch(file2.url);
-  // .then((response) => response.json())
-  await Promise.all([bonus1Prom, bonus2Prom])
-    .then((response) => Promise.all(response.map((res) => res.json())))
-    .then((data) => {
-      console.log("JSON Data:", data);
-      // Note, need to have at least 2 bonus levels, and also need to have the level data array to be even (2,4,6, etc)
-      addBonusLevels(data);
-      addBonusLevelBtn();
-      // Handle the JSON data as needed
-    })
-    .catch((error) => {
-      console.error("Error fetching JSON:", error);
-    });
-
+  const files = await fetchBonusLevels(client, storage);
+  createBonusLevels(files);
   const contract = ThirdWeb.getContract({
     client,
     // address: "FvwEAhmxKfeiG8SnEvq42hc6whRyY3EFYAvebMqDNDGCgxN5Z",
     address: "0xCf91B99548b1C17dD1095c0680E20de380635e20",
     chain: chains.avalanche,
   });
+  createChikinImages(contract, erc721, wrapperEl);
+}
+
+async function fetchBonusLevels(client: any, storage: any) {
+  const file1 = storage.download({
+    client,
+    uri: "ipfs://QmaGn65fZnKw25fqYGNqpzpjsXmnLGUdRPs5cvFEkquNnQ",
+  });
+  const file2 = storage.download({
+    client,
+    uri: "ipfs://QmPHsFPjchGU2J66gS9G5uQuPaCPmc8Rx6yzFWTYtyozFB",
+  });
+  return Promise.all([file1, file2]);
+}
+
+async function createBonusLevels(files: Promise<any>[]) {
+  const jsonProms = files.map((file: any) => fetch(file.url));
+
+  await Promise.all(jsonProms)
+    .then((response) => Promise.all(response.map((res) => res.json())))
+    .then((data) => {
+      // Note, need to have at least 2 bonus levels, and also need to have the level data array to be even (2,4,6, etc)
+      addBonusLevels(data);
+      addBonusLevelBtn();
+    });
+}
+
+async function createChikinImages(
+  contract: any,
+  erc721: any,
+  wrapperEl: HTMLElement
+) {
   const chikinMsgEl = document.createElement("div");
   chikinMsgEl.id = "c";
   chikinMsgEl.style.position = "absolute";
@@ -151,18 +133,15 @@ export async function initThirdweb() {
     imgEl.height = 1000;
     imgEl.style.width = "10vw";
     imgEl.style.height = "auto";
-    imgEl.setAttribute(
-      "r",
-      JSON.stringify({
-        r: Math.floor(Math.random() * 255),
-        g: Math.floor(Math.random() * 255),
-        b: Math.floor(Math.random() * 255),
-      })
-    );
+    const randomColor = JSON.stringify({
+      r: Math.floor(Math.random() * 255),
+      g: Math.floor(Math.random() * 255),
+      b: Math.floor(Math.random() * 255),
+    });
+    imgEl.setAttribute("r", randomColor);
 
     // Add click listener to log metadata
     imgEl.addEventListener("click", () => {
-      console.log(chikn.metadata);
       for (let i = 0; i < chikinImgEls.length; i++) {
         const chikinImgEl: HTMLImageElement = chikinImgEls[i];
         chikinImgEl.style.border = "none";
@@ -176,4 +155,28 @@ export async function initThirdweb() {
     wrapperEl.appendChild(imgEl);
     chikinImgEls.push(imgEl);
   });
+}
+
+function importThirdwebSDK() {
+  const ThirdWebProm = import(
+    // @ts-ignore
+    /* @vite-ignore */ new URL("https://esm.sh/thirdweb@5.50.0")
+  );
+
+  const chainsProm = import(
+    // @ts-ignore
+    /* @vite-ignore */ new URL("https://esm.sh/thirdweb@5.50.0/chains")
+  );
+  const erc721Prom = import(
+    // @ts-ignore
+    /* @vite-ignore */ new URL(
+      "https://esm.sh/thirdweb@5.50.0/extensions/erc721"
+    )
+  );
+  const storageProm = import(
+    // @ts-ignore
+    /* @vite-ignore */ new URL("https://esm.sh/thirdweb@5.50.0/storage")
+  );
+
+  return Promise.all([ThirdWebProm, chainsProm, erc721Prom, storageProm]);
 }
