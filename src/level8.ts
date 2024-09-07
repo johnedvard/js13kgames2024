@@ -1,49 +1,39 @@
 // ⇧ ⇨ ⇩ ⇦
-// 1 moving platform
 export default function getLevel() {
   return {
-    playerPos: { x: -200, y: -150 },
-    goalPos: { x: 1850, y: -25 },
+    playerPos: { x: 0, y: 0 },
+    goalPos: { x: 2550, y: 80 },
     objects: [
-      // 1 moving platform
+      // 1 floor
+      { box: { pos: { x: -500, y: 160 }, width: 1000, height: 100 } },
+      // moving platform between first and second floor
       {
         box: {
-          pos: { x: -200, y: 50 },
-          width: 500,
+          pos: { x: 1000, y: 160 },
+          width: 250,
           height: 100,
           options: {
-            path: { x: 500, y: 0 },
+            path: { x: 250, y: 0 },
             speed: { x: 1.5, y: 0 },
             direction: -1,
           },
         },
       },
-      // second moving platform (above)
+      // second moving platform
       {
         box: {
-          pos: { x: 600, y: -600 },
-          width: 500,
+          pos: { x: 1550, y: 160 },
+          width: 250,
           height: 100,
           options: {
-            path: { x: 500, y: 0 },
-            speed: { x: 1.5, y: 0 },
-            direction: 1,
-          },
-        },
-      },
-      // third moving platform
-      {
-        box: {
-          pos: { x: 1500, y: 50 },
-          width: 500,
-          height: 100,
-          options: {
-            path: { x: 500, y: 0 },
+            path: { x: 250, y: 0 },
             speed: { x: 1.5, y: 0 },
             direction: -1,
           },
         },
       },
+      // 2 floor
+      { box: { pos: { x: 2100, y: 160 }, width: 2000, height: 100 } },
     ],
   };
 }

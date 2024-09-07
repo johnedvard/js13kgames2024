@@ -5,11 +5,11 @@ export default function getLevel() {
     goalPos: { x: 2550, y: 80 },
     objects: [
       // 1 floor
-      { box: { pos: { x: -500, y: 160 }, width: 1500, height: 100 } },
+      { box: { pos: { x: -500, y: 160 }, width: 1000, height: 100 } },
       // moving platform between first and second floor
       {
         box: {
-          pos: { x: 1000, y: -200 },
+          pos: { x: 1000, y: 160 },
           width: 500,
           height: 100,
           options: {
@@ -20,7 +20,7 @@ export default function getLevel() {
         },
       },
       // 2 floor
-      { box: { pos: { x: 1700, y: 160 }, width: 1500, height: 100 } },
+      { box: { pos: { x: 2000, y: 160 }, width: 2000, height: 100 } },
     ],
   };
 }
