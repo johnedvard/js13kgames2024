@@ -264,11 +264,11 @@ function drawWaves(
   if (options?.type === "h") {
     gradient.addColorStop(0, "#010113");
     gradient.addColorStop(1, "#060e1a");
-    context.translate(camera.pos.x / -5, camera.pos.y / -4); // Apply camera translation parallax effect
+    context.translate(camera.pos.x / -3, camera.pos.y / -4); // Apply camera translation parallax effect
   } else {
     gradient.addColorStop(0, "#212133aa");
     gradient.addColorStop(1, "#060e1a88");
-    context.translate(camera.pos.x / -40, camera.pos.y / -5); // Apply camera translation parallax effect
+    context.translate(camera.pos.x / -7, camera.pos.y / -5); // Apply camera translation parallax effect
   }
 
   context.fillStyle = gradient;
