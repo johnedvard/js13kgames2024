@@ -27,20 +27,17 @@ export default defineConfig({
       },
     },
   },
-  // plugins: [
-  //   ViteMinifyPlugin({
-  //     removeAttributeQuotes: true,
-  //     minifyJS: true,
-  //     // minifyCSS: true,
-  //     // removeComments: true,
-  //     sortAttributes: true,
-  //     useShortDoctype: true,
-  //     sortClassName: true,
-  //     removeScriptTypeAttributes: true,
-  //     removeRedundantAttributes: true,
-  //     // removeOptionalTags: false,
-  //     // removeEmptyElements: true,
-  //     // removeEmptyAttributes: true,
-  //   }),
-  // ],
+  plugins: [
+    ViteMinifyPlugin({
+      removeAttributeQuotes: true,
+      minifyJS: true,
+      minifyCSS: true,
+      removeComments: true,
+      sortAttributes: true,
+      useShortDoctype: true,
+      sortClassName: true,
+      removeScriptTypeAttributes: true,
+      removeRedundantAttributes: true,
+    }),
+  ],
 });

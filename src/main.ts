@@ -2,7 +2,7 @@ import { init, GameLoop, Vector, Text, on } from "kontra";
 import { Balloon } from "./Balloon";
 import { initializeInputController } from "./inputController";
 import { Camera } from "./Camera";
-import { createLevelSelectObjects, initLevel } from "./levelUtils";
+import { createLevelSelectObjects, initLevel, numLevels } from "./levelUtils";
 import { listenForResize } from "./domUtils";
 import { handleCollision } from "./gameUtils";
 import { Goal } from "./Goal";
@@ -21,7 +21,7 @@ const { canvas: backgroundCanvas } = init("b");
 // These are just in-game values, not the actual canvas size
 export const GAME_WIDTH = 2548;
 
-type SceneId = "m" | "l" | "s"; // menu, level, select
+type SceneId = "m" | "l" | "s" | "b"; // menu, level, select, bonus
 let activeScene: SceneId = "m";
 let nextScene: SceneId = "l";
 const sceneTransition = new SceneTransition(transitionCanvas);
@@ -30,14 +30,17 @@ let _player: Balloon;
 let _goal: Goal;
 let camera: Camera;
 let currentLevelId = 1;
+let currentLevelData: any = null;
 let gameHasStarted = false;
 let isDisplayingLevelClearScreen = false;
 let isDisplayingPlayerDiedScreen = false;
 const levelPersistentObjects: any[] = [];
 let fadeinComplete = false; // used to control the fadein out transtiion
 
+let bonusLevels: any[] = [];
 const mainMenuObjects: any = [];
 const selectLevelObjects: any = [];
+const selectBonusLevelObjects: any = [];
 const playBtn = new BubbleButton(
   canvas,
   0,
@@ -62,6 +65,30 @@ const web3Btn = new BubbleButton(
 );
 mainMenuObjects.push(web3Btn);
 
+export function addBonusLevelBtn() {
+  const bonusPlayLvlBtn = new BubbleButton(
+    canvas,
+    0,
+    120,
+    75,
+    "Bonus",
+    40,
+    GameEvent.selectLevel,
+    { type: "b" } // bonus
+  );
+  mainMenuObjects.push(bonusPlayLvlBtn);
+}
+export function addBonusLevels(levels: any[]) {
+  bonusLevels = levels;
+  bonusLevels.sort((a, b) => a.levelId - b.levelId);
+  recreateBonusLevels(canvas, bonusLevels);
+}
+function recreateBonusLevels(canvas: HTMLCanvasElement, levels: any[]) {
+  selectBonusLevelObjects.length = 0;
+  createLevelSelectObjects(canvas, {
+    bonusLevels: levels,
+  }).forEach((obj) => selectBonusLevelObjects.push(obj));
+}
 function createLevelSelect() {
   selectLevelObjects.length = 0;
   createLevelSelectObjects(canvas).forEach((obj) => {
@@ -84,9 +111,10 @@ on(GameEvent.down, () => {
   scrollStartPos = Vector(currentCanvasPos);
 });
 
-on(GameEvent.play, ({ levelId }: any) => {
+on(GameEvent.play, ({ levelId, levelData }: any) => {
   setTimeout(() => {
     currentLevelId = levelId;
+    currentLevelData = levelData;
     nextScene = "l";
     sceneTransition.reset();
     transitionLoop.start();
@@ -97,7 +125,7 @@ on(GameEvent.web3, () => {
   initThirdweb();
   const text = Text({
     x: 0,
-    y: 120,
+    y: -250,
     color: getColorBasedOnGasAmount(1000),
     text: "Web3 enabled. Fetching random NPCs",
     font: "32px Arial",
@@ -107,9 +135,13 @@ on(GameEvent.web3, () => {
   mainMenuObjects.push(text);
 });
 
-on(GameEvent.selectLevel, () => {
+on(GameEvent.selectLevel, ({ type }: { type: string }) => {
   setTimeout(() => {
-    nextScene = "s";
+    if (type === "b") {
+      nextScene = "b";
+    } else {
+      nextScene = "s";
+    }
     sceneTransition.reset();
     transitionLoop.start();
   }, 500);
@@ -123,6 +155,9 @@ const mainLoop = GameLoop({
     } else if (activeScene === "s") {
       camera?.follow(currentCanvasPos);
       selectLevelObjects.forEach((object: any) => object.update());
+    } else if (activeScene === "b") {
+      camera?.follow(currentCanvasPos);
+      selectBonusLevelObjects.forEach((object: any) => object.update());
     } else {
       updateBackgroundCanvas();
       _objects.forEach((object) => object.update());
@@ -142,6 +177,8 @@ const mainLoop = GameLoop({
       mainMenuObjects.forEach((object: any) => object.render(context));
     } else if (activeScene === "s") {
       selectLevelObjects.forEach((object: any) => object.render(context));
+    } else if (activeScene === "b") {
+      selectBonusLevelObjects.forEach((object: any) => object.render(context));
     } else {
       renderBackgroundCanvas(camera);
       _objects.forEach((object) => object.render(context));
@@ -160,6 +197,9 @@ function destroySelectLevelObjects() {
   selectLevelObjects.forEach((object: any) => {
     if (object?.destroy) object.destroy();
   });
+  selectBonusLevelObjects.forEach((object: any) => {
+    if (object?.destroy) object.destroy();
+  });
 }
 
 const transitionLoop = GameLoop({
@@ -169,6 +209,12 @@ const transitionLoop = GameLoop({
       fadeinComplete = true;
       if (nextScene === "s") {
         activeScene = "s";
+        mainMenuObjects.forEach((object: any) => object?.destroy());
+        mainMenuObjects.length = 0;
+      } else if (nextScene === "b") {
+        activeScene = "b";
+        mainMenuObjects.forEach((object: any) => object?.destroy());
+        mainMenuObjects.length = 0;
       } else if (nextScene === "l") {
         startLevel("l");
         destroySelectLevelObjects();
@@ -258,7 +304,8 @@ async function startLevel(scene: SceneId = "m") {
   const { player, goal, gameObjects } = initLevel(
     canvas,
     camera,
-    currentLevelId
+    currentLevelId,
+    currentLevelData
   );
   _player = player;
   _goal = goal;
@@ -293,16 +340,29 @@ function handleLevelClear() {
     }, 2000);
   }
   if (_goal.checkIfGoalReached(_player) && !isDisplayingLevelClearScreen) {
-    console.log("play goal");
     playGoal();
     isDisplayingLevelClearScreen = true;
     levelPersistentObjects.length = 0;
     setTimeout(() => {
       _objects.length = 0;
       isDisplayingLevelClearScreen = false;
-      setItem(`complete-${currentLevelId}`, "true");
-      currentLevelId++;
-      if (currentLevelId === 13) currentLevelId++;
+      if (currentLevelData) {
+        // assume that we are playing bonus level,
+        setItem(`complete-bonus-${currentLevelId}`, "true");
+        currentLevelData = bonusLevels.find(
+          (l) => l.levelId === currentLevelId + 1
+        );
+        currentLevelId++;
+        if (!currentLevelData) {
+          // display theanks for playing screen when we don't have more bonus levels
+          currentLevelId = numLevels();
+        }
+      } else {
+        // assume we are playing regular level
+        setItem(`complete-${currentLevelId}`, "true");
+        currentLevelId++;
+        if (currentLevelId === 13) currentLevelId++;
+      }
       mainLoop.stop();
       sceneTransition.reset();
       transitionLoop.start();

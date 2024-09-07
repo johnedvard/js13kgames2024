@@ -1,0 +1,1 @@
+{"levelId":2,"playerPos":{"x":0,"y":0},"goalPos":{"x":2550,"y":80},"objects":[{"box":{"pos":{"x":-500,"y":160},"width":1500,"height":100}},{"box":{"pos":{"x":1000,"y":-200},"width":500,"height":100,"options":{"path":{"x":500,"y":0},"speed":{"x":1.5,"y":0},"direction":-1}}},{"box":{"pos":{"x":1700,"y":160},"width":1500,"height":100}}]}

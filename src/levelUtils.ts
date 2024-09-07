@@ -54,13 +54,17 @@ export function numLevels() {
 export function initLevel(
   canvas: HTMLCanvasElement,
   camera: Camera,
-  levelId = 1
+  levelId = 1,
+  levelData: any
 ) {
   const gameObjects: any[] = [];
 
-  const level = levels[levelId - 1]();
-  const player = new Balloon(canvas, level.playerPos);
-  const goal = new Goal(level.goalPos);
+  let level = levels[levelId - 1]();
+  if (levelData) {
+    level = levelData;
+  }
+  const player = new Balloon(canvas, Vector(level.playerPos));
+  const goal = new Goal(Vector(level.goalPos));
   camera.setPosition(player.centerPoint);
 
   level.objects.forEach((object: any) => {
@@ -100,25 +104,45 @@ export function initLevel(
   return { player, goal, gameObjects };
 }
 
-export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
-  const selectLevelObjects: any[] = [];
+type CreateLvelSelectOptions = {
+  bonusLevels: any[];
+};
+export function createLevelSelectObjects(
+  canvas: HTMLCanvasElement,
+  options?: CreateLvelSelectOptions
+) {
+  const createdLevelObjects: any[] = [];
   const gap = 150;
   const buttonWidth = 75;
+  let startPosY = -400;
   const startPosX = -400;
-  const startPosY = -400;
-  for (let col = 1; col <= (levels.length - 2) / 2; col++) {
+  let halfLength = (levels.length - 2) / 2;
+  if (options?.bonusLevels.length) {
+    halfLength = Math.max((options.bonusLevels.length - 2) / 2, 1);
+  }
+  for (let col = 1; col <= halfLength; col++) {
     for (let row = 1; row <= 2; row++) {
       const x = startPosX + col * (buttonWidth + gap);
       const y = startPosY + row * (buttonWidth + gap);
       let levelId = col * 2;
       if (row === 1) levelId -= 1;
       if (levelId >= 13) levelId += 1;
+
       let buttonText = `Level ${levelId}`;
-      const isLevelComplete = getItem(`complete-${levelId}`);
+      let isLevelComplete = getItem(`complete-${levelId}`);
+      const eventArgs = { levelId, levelData: null };
+      if (options?.bonusLevels.length) {
+        buttonText = `Bonus ${levelId}`;
+        isLevelComplete = getItem(
+          `complete-bonus-${options.bonusLevels[levelId - 1].levelId}`
+        );
+        eventArgs.levelData = options.bonusLevels[levelId - 1];
+      }
       if (isLevelComplete) {
         if (levelId < 10) buttonText += "\n    ✔";
         if (levelId >= 10) buttonText += "\n     ✔"; // center align the checkmark by adding an extra space
       }
+
       const levelButton = new BubbleButton(
         canvas,
         x,
@@ -127,10 +151,9 @@ export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
         buttonText,
         30,
         GameEvent.play,
-        { levelId }
+        eventArgs
       );
-
-      selectLevelObjects.push(levelButton);
+      createdLevelObjects.push(levelButton);
     }
   }
 
@@ -143,6 +166,6 @@ export function createLevelSelectObjects(canvas: HTMLCanvasElement) {
     anchor: { x: 0.5, y: 0.5 },
     context: canvas.getContext("2d") as CanvasRenderingContext2D,
   }); // TODO add text to button
-  selectLevelObjects.push(text);
-  return selectLevelObjects;
+  createdLevelObjects.push(text);
+  return createdLevelObjects;
 }

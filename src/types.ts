@@ -1,13 +1,11 @@
-import { Vector } from "kontra";
-
 export type LevelObject = {
-  playerPos: Vector;
-  goalPos: Vector;
+  playerPos: { x: number; y: number };
+  goalPos: { x: number; y: number };
   objects: MyGameObject[];
 };
 
 export type Box = {
-  pos: Vector;
+  pos: { x: number; y: number };
   width: number;
   height: number;
 };

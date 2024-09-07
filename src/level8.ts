@@ -1,15 +1,14 @@
-import { Vector } from "kontra";
-
 // ⇧ ⇨ ⇩ ⇦
+// 1 moving platform
 export default function getLevel() {
   return {
-    playerPos: Vector(-200, -150),
-    goalPos: Vector(1850, -25),
+    playerPos: { x: -200, y: -150 },
+    goalPos: { x: 1850, y: -25 },
     objects: [
       // 1 moving platform
       {
         box: {
-          pos: Vector(-200, 50),
+          pos: { x: -200, y: 50 },
           width: 500,
           height: 100,
           options: {
@@ -22,7 +21,7 @@ export default function getLevel() {
       // second moving platform (above)
       {
         box: {
-          pos: Vector(600, -600),
+          pos: { x: 600, y: -600 },
           width: 500,
           height: 100,
           options: {
@@ -35,7 +34,7 @@ export default function getLevel() {
       // third moving platform
       {
         box: {
-          pos: Vector(1500, 50),
+          pos: { x: 1500, y: 50 },
           width: 500,
           height: 100,
           options: {

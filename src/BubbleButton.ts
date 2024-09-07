@@ -132,7 +132,6 @@ export class BubbleButton {
     if (!this.isClicked) {
       this.text.render();
     }
-
     this.smallCircles.forEach((circle) => circle.render(context));
   }
 

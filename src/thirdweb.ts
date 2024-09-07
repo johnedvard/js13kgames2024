@@ -1,37 +1,58 @@
-// import { avalanche } from "thirdweb/chains";
-// import { getNFTs } from "thirdweb/extensions/erc721";
-// import { createThirdwebClient, getContract } from "thirdweb";
 import { setDefaultStartColor } from "./colorUtils";
 import { on } from "kontra";
 import { GameEvent } from "./GameEvent";
+import { addBonusLevelBtn, addBonusLevels } from "./main";
 
 let levelSelected = false;
-export async function initThirdweb() {
+
+function createWrapper() {
   const divEl = document.createElement("div");
   divEl.id = "w";
   divEl.style.position = "absolute";
   divEl.style.bottom = "20vh";
   divEl.style.zIndex = "99";
-  divEl.style.height = "0px";
+  divEl.style.height = "0";
   divEl.style.width = "100vw";
   divEl.style.display = "flex";
   divEl.style.alignItems = "flex-end";
   divEl.style.justifyContent = "space-evenly";
-
+  document.body.appendChild(divEl);
+  return divEl;
+}
+function createSpinner(el: HTMLDivElement) {
   // Create and style spinner element
   const spinner = document.createElement("div");
+  spinner.id += "s";
   spinner.style.border = "16px solid #fff";
   spinner.style.borderTop = "16px solid #1aa";
   spinner.style.borderRadius = "50%";
   spinner.style.width = "120px";
   spinner.style.height = "120px";
-  spinner.style.transform = "rotate(0deg)";
-  spinner.style.transition = "transform 2s linear";
-  setTimeout(() => {
-    spinner.style.transform = "rotate(360deg)";
-  }, 0);
-  divEl.appendChild(spinner);
-  document.body.appendChild(divEl);
+  spinner.style.animation = "spin 2s linear infinite";
+  // Add keyframes for spinner animation
+  const styleSheet = document.styleSheets[0];
+  styleSheet.insertRule(
+    `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `,
+    styleSheet.cssRules.length
+  );
+  el.appendChild(spinner);
+  return spinner;
+}
+export async function initThirdweb() {
+  if (levelSelected) return;
+  on(GameEvent.selectLevel, () => {
+    levelSelected = true;
+    document.getElementById("w")?.remove();
+    document.getElementById("c")?.remove();
+    document.getElementById("s")?.remove();
+  });
+  const wrapperEl = createWrapper();
+  const spinner = createSpinner(wrapperEl);
 
   const ThirdWebProm = import(
     // @ts-ignore
@@ -49,25 +70,55 @@ export async function initThirdweb() {
     )
   );
 
-  const [ThirdWeb, chains, erc721] = await Promise.all([
+  const storageProm = import(
+    // @ts-ignore
+    /* @vite-ignore */ new URL("https://esm.sh/thirdweb@5.50.0/storage")
+  );
+
+  const [ThirdWeb, chains, erc721, storage] = await Promise.all([
     ThirdWebProm,
     chainsProm,
     erc721Prom,
+    storageProm,
   ]);
 
-  levelSelected = false;
-  on(GameEvent.selectLevel, () => {
-    levelSelected = true;
-    document.getElementById("w")?.remove();
-    document.getElementById("c")?.remove();
-  });
+  wrapperEl.removeChild(spinner);
+  if (levelSelected) return;
+
   const client = ThirdWeb.createThirdwebClient({
     // use `secretKey` for server side or script usage
     clientId: "1208e5a68330be8540c30917e7065d4d",
   });
 
+  const file1 = await storage.download({
+    client,
+    uri: "ipfs://QmaGn65fZnKw25fqYGNqpzpjsXmnLGUdRPs5cvFEkquNnQ",
+  });
+  const file2 = await storage.download({
+    client,
+    uri: "ipfs://QmPHsFPjchGU2J66gS9G5uQuPaCPmc8Rx6yzFWTYtyozFB",
+  });
+
+  // Fetch and read JSON file
+  const bonus1Prom = fetch(file1.url);
+  const bonus2Prom = fetch(file2.url);
+  // .then((response) => response.json())
+  await Promise.all([bonus1Prom, bonus2Prom])
+    .then((response) => Promise.all(response.map((res) => res.json())))
+    .then((data) => {
+      console.log("JSON Data:", data);
+      // Note, need to have at least 2 bonus levels, and also need to have the level data array to be even (2,4,6, etc)
+      addBonusLevels(data);
+      addBonusLevelBtn();
+      // Handle the JSON data as needed
+    })
+    .catch((error) => {
+      console.error("Error fetching JSON:", error);
+    });
+
   const contract = ThirdWeb.getContract({
     client,
+    // address: "FvwEAhmxKfeiG8SnEvq42hc6whRyY3EFYAvebMqDNDGCgxN5Z",
     address: "0xCf91B99548b1C17dD1095c0680E20de380635e20",
     chain: chains.avalanche,
   });
@@ -75,12 +126,12 @@ export async function initThirdweb() {
   chikinMsgEl.id = "c";
   chikinMsgEl.style.position = "absolute";
   chikinMsgEl.style.bottom = "11vh";
-  chikinMsgEl.style.zIndex = "99";
+  chikinMsgEl.style.zIndex = "9";
   chikinMsgEl.style.width = "100vw";
   chikinMsgEl.style.display = "flex";
   chikinMsgEl.style.alignItems = "flex-end";
   chikinMsgEl.style.justifyContent = "center";
-  chikinMsgEl.style.color = "white";
+  chikinMsgEl.style.color = "#fff";
   chikinMsgEl.innerHTML = "";
 
   const chikns: any[] = await erc721.getNFTs({
@@ -92,8 +143,6 @@ export async function initThirdweb() {
   document.body.appendChild(chikinMsgEl);
 
   const chikinImgEls: HTMLImageElement[] = [];
-
-  divEl.removeChild(spinner);
 
   chikns.forEach((chikn) => {
     const imgEl = document.createElement("img");
@@ -124,9 +173,7 @@ export async function initThirdweb() {
       }, give you the power of color!`;
       setDefaultStartColor(JSON.parse(imgEl.getAttribute("r") as string));
     });
-    divEl.appendChild(imgEl);
+    wrapperEl.appendChild(imgEl);
     chikinImgEls.push(imgEl);
   });
-
-  document.body.appendChild(divEl);
 }
