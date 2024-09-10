@@ -1,11 +1,12 @@
+
 import { Vector } from "kontra";
 const h = 1800;
-const w = 2500;
+const w = 2000;
 
 export default function getLevel() {
   return {
     playerPos: Vector(150, h - 350),
-    goalPos: Vector(250, 400),
+    goalPos: Vector(1400, h - 850),
     objects: [
       // larger box bottom
       { box: { pos: Vector(900, h - 350), width: 350, height: 350 } },
@@ -17,8 +18,8 @@ export default function getLevel() {
       // middle floor
       {
         box: {
-          pos: Vector(-100, h - 1150),
-          width: w - 500,
+          pos: Vector(0, h - 1150),
+          width: w,
           height: 200,
         },
       },
@@ -31,18 +32,10 @@ export default function getLevel() {
           height: 150,
         },
       },
-      {
-        // left wall
-        box: {
-          pos: Vector(-100, -100),
-          width: 150,
-          height: 750,
-        },
-      },
       { text: { pos: Vector(w + 20, 200), text: "Up ⇧" } },
       { text: { pos: Vector(w + 20, h - 200), text: "Up ⇧" } },
       { text: { pos: Vector(w + 20, h - 800), text: "Up ⇧" } },
-      { text: { pos: Vector(w - 400, -50), text: "⇦ Left" } },
+      { text: { pos: Vector(w-500, h-1000), text: "⇦ Stick to ceiling to go Left ⇦" } },
       // right wall
       {
         box: {
