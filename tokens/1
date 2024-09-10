@@ -1,0 +1,20 @@
+{
+  "name": "Green Bubble",
+  "tokenId": 1,
+  "image": "https://apricot-tasty-peacock-500.mypinata.cloud/ipfs/QmcQJuQPg7QicaJW2sNAEBCvKfLU96tMTwqRMyfMZbXeCP/1.png",
+  "description": "Green Power",
+  "attributes": [
+      {
+          "trait_type": "r",
+          "value": 95
+      },
+      {
+          "trait_type": "g",
+          "value": 226
+      },
+      {
+          "trait_type": "b",
+          "value": 151
+      }
+  ]
+}

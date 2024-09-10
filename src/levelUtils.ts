@@ -116,9 +116,9 @@ export function createLevelSelectObjects(
   const buttonWidth = 75;
   let startPosY = -400;
   const startPosX = -400;
-  let halfLength = (levels.length - 2) / 2;
+  let halfLength = (levels.length - 2) / 2; // subtracting by 2 to make room for the thank you for playing level (without being able to select it)
   if (options?.bonusLevels.length) {
-    halfLength = Math.max((options.bonusLevels.length - 2) / 2, 1);
+    halfLength = options.bonusLevels.length / 2;
   }
   for (let col = 1; col <= halfLength; col++) {
     for (let row = 1; row <= 2; row++) {

@@ -84,7 +84,16 @@ async function fetchBonusLevels(client: any, storage: any) {
     client,
     uri: "ipfs://QmPHsFPjchGU2J66gS9G5uQuPaCPmc8Rx6yzFWTYtyozFB",
   });
-  return Promise.all([file1, file2]);
+  const file3 = storage.download({
+    client,
+    uri: "ipfs://QmckDTy8fDwUtWxbEHjdMjSmUS7VJV5u9zDF4jQVBfXS9P",
+  });
+  const file4 = storage.download({
+    client,
+    uri: "ipfs://QmSmJq4vTHeQvdkWX1qcCQMUJJpxWc5jTTZQRPPimmBAKn",
+  });
+
+  return Promise.all([file1, file2, file3, file4]);
 }
 
 async function createBonusLevels(files: Promise<any>[]) {

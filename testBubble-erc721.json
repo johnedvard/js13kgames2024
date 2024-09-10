@@ -1,0 +1,27 @@
+[
+    {
+        "cid": "QmWxSRuWm74RSG8rL73GaAYnXcsaXwePbSRfZjWjxAg2eB",
+        "tokenID": 1,
+        "metadata": {
+            "name": "Purple Bubble",
+            "description": "A bubble with purple powers",
+            "image": "https://apricot-tasty-peacock-500.mypinata.cloud/ipfs/QmWxSRuWm74RSG8rL73GaAYnXcsaXwePbSRfZjWjxAg2eB",
+            "type": "ERC721",
+            "attributes": [
+                {
+                    "trait_type": "r",
+                    "value": 147
+                },
+                {
+                    "trait_type": "g",
+                    "value": 139
+                },
+                {
+                    "trait_type": "b",
+                    "value": 218
+                }
+
+            ]
+        }
+    }
+]
