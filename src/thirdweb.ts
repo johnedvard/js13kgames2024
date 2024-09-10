@@ -72,7 +72,7 @@ export async function initThirdweb() {
     // address: "0xCf91B99548b1C17dD1095c0680E20de380635e20", // chikins
     chain: chains.avalanche,
   });
-  createChikinImages(contract, erc721, wrapperEl);
+  createBubbleImages(contract, erc721, wrapperEl);
 }
 
 async function fetchBonusLevels(client: any, storage: any) {
@@ -108,62 +108,61 @@ async function createBonusLevels(files: Promise<any>[]) {
     });
 }
 
-async function createChikinImages(
+async function createBubbleImages(
   contract: any,
   erc721: any,
   wrapperEl: HTMLElement
 ) {
-  const chikinMsgEl = document.createElement("div");
-  chikinMsgEl.id = "c";
-  chikinMsgEl.style.position = "absolute";
-  chikinMsgEl.style.bottom = "10vh";
-  chikinMsgEl.style.zIndex = "9";
-  chikinMsgEl.style.width = "100vw";
-  chikinMsgEl.style.display = "flex";
-  chikinMsgEl.style.alignItems = "flex-end";
-  chikinMsgEl.style.justifyContent = "center";
-  chikinMsgEl.style.color = "#fff";
-  chikinMsgEl.innerHTML = "";
+  const bubbleMsgEl = document.createElement("div");
+  bubbleMsgEl.id = "c";
+  bubbleMsgEl.style.position = "absolute";
+  bubbleMsgEl.style.bottom = "10vh";
+  bubbleMsgEl.style.zIndex = "9";
+  bubbleMsgEl.style.width = "100vw";
+  bubbleMsgEl.style.display = "flex";
+  bubbleMsgEl.style.alignItems = "flex-end";
+  bubbleMsgEl.style.justifyContent = "center";
+  bubbleMsgEl.style.color = "#fff";
+  bubbleMsgEl.innerHTML = "";
 
-  const chikns: any[] = await erc721.getNFTs({
+  const bubbleNFTs: any[] = await erc721.getNFTs({
     contract,
     start: 0,
     count: 3,
   });
   if (levelSelected) return;
-  document.body.appendChild(chikinMsgEl);
-console.log('chikns', chikns)
+  document.body.appendChild(bubbleMsgEl);
 
-  const chikinImgEls: HTMLImageElement[] = [];
+  const bubbleImgEls: HTMLImageElement[] = [];
 
-  chikns.forEach((chikn) => {
+  bubbleNFTs.forEach((nft) => {
     const imgEl = document.createElement("img");
-    imgEl.src = chikn?.metadata?.image as string;
+    imgEl.src = nft?.metadata?.image as string;
     imgEl.width = 1000;
     imgEl.height = 1000;
     imgEl.style.width = "10vw";
     imgEl.style.height = "auto";
-    const randomColor = JSON.stringify({
-      r: Math.floor(Math.random() * 255),
-      g: Math.floor(Math.random() * 255),
-      b: Math.floor(Math.random() * 255),
+    const powerColor = JSON.stringify({
+      r: nft.metadata?.attributes[0].value,
+      g: nft.metadata?.attributes[1].value,
+      b: nft.metadata?.attributes[2].value,
     });
-    imgEl.setAttribute("r", randomColor);
+    imgEl.setAttribute("r", powerColor);
 
     // Add click listener to log metadata
     imgEl.addEventListener("click", () => {
-      for (let i = 0; i < chikinImgEls.length; i++) {
-        const chikinImgEl: HTMLImageElement = chikinImgEls[i];
-        chikinImgEl.style.border = "none";
+      for (let i = 0; i < bubbleImgEls.length; i++) {
+        const bubbleImgEl: HTMLImageElement = bubbleImgEls[i];
+        bubbleImgEl.style.border = "none";
       }
       imgEl.style.border = "2px solid #fff";
-      chikinMsgEl.innerHTML = `I, ${
-        chikn.metadata?.name as string
-      }, give you the power of color!`;
+      bubbleMsgEl.innerHTML = `I, ${nft.metadata?.name as string}, give you ${
+        nft.metadata?.description
+      }`;
       setDefaultStartColor(JSON.parse(imgEl.getAttribute("r") as string));
     });
     wrapperEl.appendChild(imgEl);
-    chikinImgEls.push(imgEl);
+    bubbleImgEls.push(imgEl);
   });
 }
 

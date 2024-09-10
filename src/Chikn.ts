@@ -1,21 +1,14 @@
-type TraitType =
-  | "head"
-  | "neck"
-  | "torso"
-  | "body"
-  | "feet"
-  | "background"
-  | "trim";
+type TraitType = "r" | "g" | "b";
 
-type ChiknMetadata = {
+type BubbleMetadata = {
   attributes: { trait_type: TraitType; value: string }[];
   description: string;
   image: string;
   name: string;
 };
-export interface Chikn {
+export interface Bubble {
   id: number;
-  metadata: ChiknMetadata;
+  metadata: BubbleMetadata;
   owner: any;
   tokenURI: string;
 }
