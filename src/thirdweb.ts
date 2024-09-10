@@ -68,8 +68,8 @@ export async function initThirdweb() {
   createBonusLevels(files);
   const contract = ThirdWeb.getContract({
     client,
-    // address: "FvwEAhmxKfeiG8SnEvq42hc6whRyY3EFYAvebMqDNDGCgxN5Z",
-    address: "0xCf91B99548b1C17dD1095c0680E20de380635e20",
+    address: "0xcA61C32f3912b3882fB488eBF44F8275f41faFf1", // Bubble Burst
+    // address: "0xCf91B99548b1C17dD1095c0680E20de380635e20", // chikins
     chain: chains.avalanche,
   });
   createChikinImages(contract, erc721, wrapperEl);
@@ -118,11 +118,12 @@ async function createChikinImages(
 
   const chikns: any[] = await erc721.getNFTs({
     contract,
-    start: Math.floor(Math.random() * 11000),
+    start: 0,
     count: 3,
   });
   if (levelSelected) return;
   document.body.appendChild(chikinMsgEl);
+console.log('chikns', chikns)
 
   const chikinImgEls: HTMLImageElement[] = [];
 
