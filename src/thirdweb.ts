@@ -142,6 +142,8 @@ async function createBubbleImages(
     imgEl.height = 1000;
     imgEl.style.width = "10vw";
     imgEl.style.height = "auto";
+    imgEl.style.borderRadius = "50%";
+    imgEl.style.animation = "spin 5s linear infinite";
     const powerColor = JSON.stringify({
       r: nft.metadata?.attributes[0].value,
       g: nft.metadata?.attributes[1].value,
