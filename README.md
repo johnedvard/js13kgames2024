@@ -24,14 +24,21 @@ js13kgames offers some challenges. Here are the once I embraced.
 - OP Guild Challenge
     - NPCs which gives the bubble a makeover
 - Avalanche Challenge
-    - Fetches 3 random Chikinz https://chikn.farm/, which are the NPCs in the game
+    - Created my own ERC721 Smart Contract, and deployed it to Avalanche, https://snowtrace.io/token/0xcA61C32f3912b3882fB488eBF44F8275f41faFf1
+    - Fetches the 3 tokens, which acts as NPCs to give the bubble some colors
 - Thirdweb Challenge
     - Use the [Thirdweb Typescript SDK](https://portal.thirdweb.com/typescript/v5)
+    - Use the SDK to fetch my 3 NFTs from the Avalanche blockchain
+    - Use the SDK to fetch bonus levels from Pinata (IPFS)
+        - Bonus 1: https://apricot-tasty-peacock-500.mypinata.cloud/ipfs/QmaGn65fZnKw25fqYGNqpzpjsXmnLGUdRPs5cvFEkquNnQ
+        - Bonus 2: https://apricot-tasty-peacock-500.mypinata.cloud/ipfs/QmPHsFPjchGU2J66gS9G5uQuPaCPmc8Rx6yzFWTYtyozFB
+        - Bonus 3: https://apricot-tasty-peacock-500.mypinata.cloud/ipfs/QmckDTy8fDwUtWxbEHjdMjSmUS7VJV5u9zDF4jQVBfXS9P
+        - Bonus 4: https://apricot-tasty-peacock-500.mypinata.cloud/ipfs/QmSmJq4vTHeQvdkWX1qcCQMUJJpxWc5jTTZQRPPimmBAKn
 - Arcadia Challenge
     - Upload the same game to [Arcadia](https://arcadia.fun/)
 
-The player has to click the "Web3" button in the game to see the challenges. Clicking "Web3" will embed a version of the same game which includes the Thirdweb TypeScript SDK.
-I use the SDK to connect to the Avalanche blockchain, and fetch 3 random chikinz which acts as NPCs in the game. I wanted to make more out of the decentralized challenge, but figuring out how to use the Thirdweb TypeScript SDK in my game was a challenge in itself. I therefore went with a simple approach, changing the color of the bubble depending on the NPC.
+The player has to click the "Web3" button in the game to see the challenges. Clicking "Web3" will dynamically import the Thirdweb TypeScript SDK, and fetch NFTs (My NPCs) from Avalancnhe, and bonus levels from IPFS.
+Clicking on any of my NPCs will change the color of the bubble
 
 
 ### Mobile
