@@ -1,10 +1,14 @@
-import { Vector } from "kontra";
+import { emit, Vector } from "kontra";
 import { projectPointOntoSegment, rayIntersectsSegment } from "./mathUtils";
 import { Particle } from "./Particle";
 import { Spring } from "./Spring";
 import { Balloon } from "./Balloon";
+import { GameEvent } from "./GameEvent";
 
+let timeSinceLastBubbleParticleEmitted = 0;
+let emitInterval = 0;
 export function handleCollision(objects: any[]) {
+  timeSinceLastBubbleParticleEmitted += 1000 / 60;
   let closestPointOnLine: Vector | null = null;
   for (let i = 0; i < objects.length; i++) {
     let closestOtherObject: any = null;
@@ -48,6 +52,11 @@ export function handleCollision(objects: any[]) {
         }
         if (checkIfKillSpike(object, closestOtherObject)) {
           object?.setState("d");
+        }
+        if (timeSinceLastBubbleParticleEmitted > emitInterval) {
+          emitInterval = 50 + Math.random() * 200;
+          timeSinceLastBubbleParticleEmitted = 0;
+          emit(GameEvent.bubbleParticle, { pos: closestPointOnLine });
         }
         particle.pos = Vector(closestPointOnLine);
         particle.velocity = particle.velocity.scale(-1); // adjust the velocity to simulate a bounce

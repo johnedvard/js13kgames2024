@@ -14,6 +14,7 @@ import { setItem } from "./storageUtils";
 import { playGoal } from "./audio";
 import { getColorBasedOnGasAmount } from "./colorUtils";
 import { initThirdweb } from "./thirdweb";
+import { addBubbleParticles } from "./particleUtils";
 
 const { canvas } = init("g");
 const { canvas: transitionCanvas } = init("t");
@@ -41,6 +42,7 @@ let bonusLevels: any[] = [];
 const mainMenuObjects: any = [];
 const selectLevelObjects: any = [];
 const selectBonusLevelObjects: any = [];
+const particles: Balloon[] = [];
 const playBtn = new BubbleButton(
   canvas,
   0,
@@ -148,8 +150,20 @@ on(GameEvent.selectLevel, ({ type }: { type: string }) => {
   }, 500);
 });
 
+on(GameEvent.bubbleParticle, ({ pos }: { pos: Vector }) => {
+  particles.push(addBubbleParticles(canvas, pos));
+});
+
 const mainLoop = GameLoop({
   update: function () {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const particle = particles[i];
+      particle.update();
+
+      if (particle.timeToLive <= 0) {
+        particles.splice(i, 1);
+      }
+    }
     if (activeScene === "m") {
       camera?.follow(Vector(0, 0));
       mainMenuObjects.forEach((object: any) => object.update());
@@ -171,9 +185,9 @@ const mainLoop = GameLoop({
   },
   render: function () {
     const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-
     camera.clear(context);
     camera.apply(context);
+    particles.forEach((particle) => particle.render(context));
     if (activeScene === "m") {
       mainMenuObjects.forEach((object: any) => object.render(context));
     } else if (activeScene === "s") {

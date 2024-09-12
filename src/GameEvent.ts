@@ -7,4 +7,5 @@ export enum GameEvent {
   selectLevel = "l",
   drag = "dr",
   kill = "k",
+  bubbleParticle = "bp",
 }

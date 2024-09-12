@@ -9,7 +9,7 @@ import { playExplode, playInflate } from "./audio";
 
 const MING_GAS_AMOUNT = 10000;
 
-type BalloonType = "f" | "e" | "p"; //friend enemy player
+type BalloonType = "f" | "e" | "p" | "d"; //friend enemy player d = particle
 type BalloonOptions = {
   numParticles?: number;
   length?: number;
@@ -20,6 +20,8 @@ type BalloonOptions = {
   hideText?: boolean;
   hideParticles?: boolean;
   balloonType?: BalloonType;
+  distance: number;
+  timeToLive?: number;
 };
 export class Balloon {
   state: "" | "d" = ""; // d = dead
@@ -38,6 +40,7 @@ export class Balloon {
   isBalloon = true;
   hideText = false;
   ellapsedDeadTime = 0;
+  timeToLive: number = 0; // only for particles
 
   gasAmount: number = 70000; // Number of moles of gas
   R: number = 0.3; // Ideal gas constant
@@ -61,11 +64,12 @@ export class Balloon {
     });
 
     this.gasAmount = ballonOptions?.gasAmount || 65000;
+    this.timeToLive = ballonOptions?.timeToLive || 0;
     this.lineWidth = ballonOptions?.lineWidth || 10;
     this.hideParticles = ballonOptions?.hideParticles || false;
     this.balloonType = ballonOptions?.balloonType || "p";
     const numParticles = ballonOptions?.numParticles || 20;
-    const distance = ballonOptions?.length ? ballonOptions?.length * 5 : 50;
+    const distance = ballonOptions?.distance ? ballonOptions?.distance * 5 : 50;
     const length = ballonOptions?.length || 10;
     const stiffness = ballonOptions?.stiffness || 0.08;
     this.isStationairy = ballonOptions?.isStationairy || false;
@@ -108,6 +112,7 @@ export class Balloon {
     return (this.gasAmount * this.R * this.T) / this.volume;
   }
   updateBalloonGravity() {
+    this.timeToLive -= 1000 / 60;
     const maxGasAmount = 130000;
     const minGravity = -0.1;
     const maxGravity = 0.1;
@@ -135,8 +140,13 @@ export class Balloon {
       const p2 = spring.p2;
       spring.length = this.gasAmount / 5000;
       if (spring.length < 1) spring.length = 1;
-      p1.applyForce(spring.normalVector.scale(gasPressure)); // prent the balloon from spinning
-      p2.applyForce(spring.normalVector.scale(gasPressure).scale(-1)); // prent the balloon from spinning
+      if (this.balloonType === "d") {
+        p1.applyForce(spring.normalVector.scale(gasPressure).scale(0.1)); // prent the balloon from spinning
+        p2.applyForce(spring.normalVector.scale(gasPressure).scale(-0.1)); // prent the balloon from spinning
+      } else {
+        p1.applyForce(spring.normalVector.scale(gasPressure)); // prent the balloon from spinning
+        p2.applyForce(spring.normalVector.scale(gasPressure).scale(-1)); // prent the balloon from spinning
+      }
     });
   }
 
@@ -252,7 +262,9 @@ export class Balloon {
     // Create a spline through all the points in the particles array
     context.beginPath();
     context.moveTo(this.particles[0].pos.x, this.particles[0].pos.y);
-    if (this.balloonType === "e") {
+    if (this.balloonType === "d") {
+      context.strokeStyle = "#fefefe66";
+    } else if (this.balloonType === "e") {
       context.strokeStyle = getColorBasedOnGasAmount(130000);
     } else if (this.balloonType === "f") {
       context.strokeStyle = "#1c2";

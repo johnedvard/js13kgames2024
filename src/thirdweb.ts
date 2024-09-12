@@ -21,15 +21,37 @@ function createWrapper() {
 }
 function createSpinner(el: HTMLDivElement) {
   // Create and style spinner element
+  const spinnerWrapper = document.createElement("div");
+  const spinnerWrapper2 = document.createElement("div");
+  spinnerWrapper2.style.bottom = "16vh";
+  spinnerWrapper.id = "s";
+  spinnerWrapper2.id = "q";
+  [spinnerWrapper, spinnerWrapper2].forEach((w) => {
+    w.style.color = "#fff";
+    w.style.display = "flex";
+    w.style.position = "absolute";
+    w.style.flexDirection = "column";
+    w.style.alignItems = "center";
+  });
   const spinner = document.createElement("div");
-  spinner.id += "s";
-  spinner.style.border = "16px solid #fff";
-  spinner.style.borderTop = "16px solid #1aa";
-  spinner.style.borderRadius = "50%";
-  spinner.style.width = "120px";
-  spinner.style.height = "120px";
-  spinner.style.animation = "spin 2s linear infinite";
-  // Add keyframes for spinner animation
+  const spinner2 = document.createElement("div");
+  const loadingImgEl = document.createElement("div");
+  const loadingBonusEl = document.createElement("div");
+  loadingImgEl.textContent = "Loading NPCs";
+  loadingBonusEl.textContent = "Loading Bonus levels";
+  spinnerWrapper.appendChild(loadingImgEl);
+  spinnerWrapper.appendChild(spinner);
+  spinnerWrapper2.appendChild(loadingBonusEl);
+  spinnerWrapper2.appendChild(spinner2);
+  [spinner, spinner2].forEach((s) => {
+    s.style.border = "16px solid #fff";
+    s.style.borderTop = "16px solid #1aa";
+    s.style.borderRadius = "50%";
+    s.style.width = "75px";
+    s.style.height = "75px";
+    s.style.animation = "spin 2s linear infinite";
+    // Add keyframes for spinner animation
+  });
   const styleSheet = document.styleSheets[0];
   styleSheet.insertRule(
     `
@@ -40,8 +62,9 @@ function createSpinner(el: HTMLDivElement) {
   `,
     styleSheet.cssRules.length
   );
-  el.appendChild(spinner);
-  return spinner;
+  el.appendChild(spinnerWrapper);
+  el.appendChild(spinnerWrapper2);
+  return [spinnerWrapper, spinnerWrapper2];
 }
 export async function initThirdweb() {
   if (levelSelected) return;
@@ -50,29 +73,40 @@ export async function initThirdweb() {
     document.getElementById("w")?.remove();
     document.getElementById("c")?.remove();
     document.getElementById("s")?.remove();
+    document.getElementById("q")?.remove();
   });
   const wrapperEl = createWrapper();
-  const spinner = createSpinner(wrapperEl);
+  const [spinner, spinner2] = createSpinner(wrapperEl);
 
   const [ThirdWeb, chains, erc721, storage] = await importThirdwebSDK();
 
-  wrapperEl.removeChild(spinner);
-  if (levelSelected) return;
+  if (levelSelected) {
+    wrapperEl.removeChild(spinner);
+    wrapperEl.removeChild(spinner2);
+    return;
+  }
 
   const client = ThirdWeb.createThirdwebClient({
     // use `secretKey` for server side or script usage
     clientId: "1208e5a68330be8540c30917e7065d4d",
   });
 
-  const files = await fetchBonusLevels(client, storage);
-  createBonusLevels(files);
+  fetchBonusLevels(client, storage)
+    .then((files) => {
+      return createBonusLevels(files);
+    })
+    .then(() => {
+      wrapperEl.removeChild(spinner2);
+    });
   const contract = ThirdWeb.getContract({
     client,
     address: "0xcA61C32f3912b3882fB488eBF44F8275f41faFf1", // Bubble Burst
     // address: "0xCf91B99548b1C17dD1095c0680E20de380635e20", // chikins
     chain: chains.avalanche,
   });
-  createBubbleImages(contract, erc721, wrapperEl);
+  createBubbleImages(contract, erc721, wrapperEl).then(() => {
+    wrapperEl.removeChild(spinner);
+  });
 }
 
 async function fetchBonusLevels(client: any, storage: any) {

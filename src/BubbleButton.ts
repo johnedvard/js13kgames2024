@@ -146,6 +146,7 @@ export class BubbleButton {
       const smallCircle = new Balloon(this.canvas, pos, {
         gasAmount: 5000,
         length: 1,
+        distance: 1,
         numParticles: 10,
         stiffness: 0.2,
         lineWidth: 2,
