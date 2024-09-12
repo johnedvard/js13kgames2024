@@ -13,9 +13,11 @@ export class Particle {
   constructor(pos: Vector) {
     this.pos = Vector(pos);
   }
+  // need to apply force, because of Hookes Law
   applyForce(force: Vector) {
     this.force = this.force.add(force);
   }
+
   setSpeed(speed: Vector) {
     this.baseSpeed = Vector(speed);
     this.velocity = Vector(speed);
@@ -29,6 +31,7 @@ export class Particle {
     this.velocity.clamp(-MAX_SPEED, -MAX_SPEED, MAX_SPEED, MAX_SPEED);
 
     this.pos = this.pos.add(this.velocity);
+
     this.force = Vector(GRAVITY);
   }
 

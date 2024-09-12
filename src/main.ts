@@ -326,6 +326,8 @@ async function startLevel(scene: SceneId = "m") {
     currentLevelId,
     currentLevelData
   );
+  // const seaWeed = new SeaWeed(Vector(player.centerPoint));
+  // particles.push(seaWeed);
   _player = player;
   _goal = goal;
   _objects = gameObjects;

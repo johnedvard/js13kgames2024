@@ -102,7 +102,6 @@ export function initLevel(
       gameObjects.push(new Spike(Vector(object.spike.pos)));
     }
   });
-
   return { player, goal, gameObjects };
 }
 
