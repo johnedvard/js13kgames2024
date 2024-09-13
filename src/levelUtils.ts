@@ -19,6 +19,8 @@ import level12 from "./level12";
 import level13 from "./level13";
 import level14 from "./level14";
 import level15 from "./level15";
+import level20 from "./level20";
+import level16 from "./level16";
 import finalLevel from "./levelLast";
 import { Goal } from "./Goal";
 import { getItem } from "./storageUtils";
@@ -26,6 +28,8 @@ import { BubbleButton } from "./BubbleButton";
 import { GameEvent } from "./GameEvent";
 import { getColorBasedOnGasAmount } from "./colorUtils";
 import { Spike } from "./Spike";
+import level17 from "./level17";
+import level18 from "./level18";
 
 // Keep an odd number of levels to make it work.
 const levels: Array<() => LevelObject> = [
@@ -45,8 +49,12 @@ const levels: Array<() => LevelObject> = [
   level13, // level 13 is special, it's not a playable level
   level14,
   level15,
-  finalLevel,
-  finalLevel, // adjust the final level to be the last one
+  level16,
+  level17,
+  level18,
+  level20,
+  finalLevel, // adjust the final level to be the last one, but not appearing in level select screen
+  finalLevel, // adjust the final level to be the last one, but not appearing in level select screen
 ];
 
 export function numLevels() {

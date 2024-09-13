@@ -1,63 +1,16 @@
-// ⇧ ⇨ ⇩ ⇦ ⇖ ⇗ ⇘ ⇙
 export default function getLevel() {
   return {
-    playerPos: { x: 900, y: 500 },
-    goalPos: { x: 280, y: 900 },
+    playerPos: { x: 500, y: 1300 },
+    goalPos: { x: 750, y: 720 },
     objects: [
       // floor
-      { box: { pos: { x: 200, y: 1240 }, width: 1200, height: 100 } },
-      // left wall
-      { box: { pos: { x: 100, y: 240 }, width: 100, height: 1000 } },
-      // moving platform
-      {
-        box: {
-          pos: { x: 500, y: 0 },
-          width: 440,
-          height: 100,
-          options: {
-            path: { x: 250, y: 0 },
-            speed: { x: 1.5, y: 0 },
-            direction: -1,
-          },
-        },
-      },
+      { box: { pos: { x: 300, y: 1500 }, width: 1000, height: 150 } },
       // right wall
-      { box: { pos: { x: 1300, y: 240 }, width: 100, height: 1000 } },
-
-      // left floor
-      { box: { pos: { x: 200, y: 660 }, width: 430, height: 150 } },
-      // right floor
-      { box: { pos: { x: 870, y: 660 }, width: 430, height: 150 } },
+      { box: { pos: { x: 1200, y: 260 }, width: 350, height: 1350 } },
+      // first plate
+      { box: { pos: { x: 580, y: 1160 }, width: 450, height: 50 } },
+      // second plate
+      { box: { pos: { x: 580, y: 890 }, width: 450, height: 50 } },
     ],
   };
 }
-
-// ⇧ ⇨ ⇩ ⇦ ⇖ ⇗ ⇘ ⇙
-// export default function getLevel() {
-//   return {
-//     playerPos: { x: 0, y: 0 },
-//     goalPos: { x: -500, y: -780 },
-//     objects: [
-//       // floor
-//       { box: { pos: { x: -1500, y: 150 }, width: 2000, height: 100 } },
-//       // moving platform
-//       {
-//         box: {
-//           pos: { x: -250, y: -450 },
-//           width: 440,
-//           height: 100,
-//           options: {
-//             path: { x: 250, y: 0 },
-//             speed: { x: 1.5, y: 0 },
-//             direction: -1,
-//           },
-//         },
-//       },
-//       // right wall
-//       { box: { pos: { x: 500, y: -450 }, width: 250, height: 700 } },
-//       { spike: { pos: { x: -1200, y: 0 } } },
-//       { spike: { pos: { x: 550, y: -550 } } },
-//       { text: { pos: { x: 510, y: 50 }, text: "⇖ Behind you ⇖" } },
-//     ],
-//   };
-// }
