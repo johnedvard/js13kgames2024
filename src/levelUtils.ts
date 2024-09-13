@@ -45,8 +45,8 @@ const levels: Array<() => LevelObject> = [
   level9,
   level10,
   level11,
-  level12,
   level13, // level 13 is special, it's not a playable level
+  level12,
   level14,
   level15,
   level16,
