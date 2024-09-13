@@ -65,8 +65,7 @@ export class SeaWeed {
         this.particles[i],
         this.particles[nextIndex],
         this.jointLength,
-        0.5,
-        { ignoreSelfCollision: true }
+        0.5
       );
       this.springs.push(spring);
     }
